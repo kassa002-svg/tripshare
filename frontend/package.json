@@ -10,6 +10,8 @@
     "typecheck": "bun check"
   },
   "dependencies": {
+    "@react-oauth/google": "^0.13.5",
+    "dotenv": "^18.0.8",
     "react": "^19",
     "react-dom": "^19"
   },
