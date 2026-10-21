@@ -5,19 +5,15 @@ import ProfileNavBar from "./ProfilePage";
 export function App() {
   return (
     <div>
-        <ProfileNavBar />
-        <div className ="profileScreen">
-          <div className="center">
-              <div className="samplePlus">
-                 + 
-              </div>
-              <div className="samplePost">
-              </div>
-          </div>
-          <div className ="bigProfilePicture">
-          </div>
+      <ProfileNavBar />
+      <div className="profileScreen">
+        <div className="center">
+          <div className="samplePlus">+</div>
+          <div className="samplePost"></div>
         </div>
-        {/*
+        <div className="bigProfilePicture"></div>
+      </div>
+      {/*
           <div className="app">
         <h1>Profile</h1>
         <p>
