@@ -31,7 +31,7 @@ export interface Itinerary {
   description: string;
   items: ItineraryItem[]; // embedded
   likes: string[]; // array of user ids
-  likesCount: number; // denormalized, for sort by likes
+  likesCount: number; // for sorting by likes
   copiedFrom: string | null; // itinerary id
   createdAt: string;
   updatedAt: string;
@@ -41,7 +41,7 @@ export interface Comment {
   id: string;
 
   itineraryId: string;
-  itemId: string | null; // null = comment on the itinerary, set = comment on one item
+  itemId: string | null; // null = comment on the itinerary, set = comment on specific item
   authorId: string;
   text: string;
   createdAt: string;
