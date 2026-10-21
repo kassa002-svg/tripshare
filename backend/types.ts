@@ -1,10 +1,11 @@
 export interface User {
   id: string;
 
-  googleId: string;
+  passwordHash: string | null;
+  googleId: string | null;
   email: string;
   displayName: string;
-  profilePhotoUrl: string;
+  avatar: string | null;
   bio: string;
   following: string[]; // array of ids
   savedItineraries: string[]; // array of ids

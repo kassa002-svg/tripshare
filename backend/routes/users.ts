@@ -13,11 +13,12 @@ router.post("/signup", async (req: Request, res: Response) => {
     googleId: req.body.googleId,
     email: req.body.email,
     displayName: req.body.displayName,
-    profilePhotoUrl: req.body.profilePhotoUrl ?? "",
+    avatar: req.body.profilePhotoUrl ?? "",
     bio: req.body.bio ?? "",
     following: [],
     savedItineraries: [],
     createdAt: new Date().toISOString(),
+    passwordHash: "temp",
   };
 
   await getDB().collection<User>("users").insertOne(user);
