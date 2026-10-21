@@ -2,7 +2,7 @@ import express, { type Express, type Request, type Response } from "express";
 import usersRouter from "./routes/users";
 
 const app: Express = express();
-const port = 3000;
+const port = 3001;
 
 app.use(express.json());
 
