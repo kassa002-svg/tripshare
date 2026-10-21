@@ -4,7 +4,16 @@ import "./index.css";
 import logo from "./logo.svg";
 import reactLogo from "./react.svg";
 
+import { LoginPage } from "./pages/LoginPage";
+import { RegisterPage } from "./pages/RegisterPage";
+import { MapPage } from "./pages/MapPage";
+
 export function App() {
+  const path = window.location.pathname;
+  if(path === "/map") return <MapPage/>;
+  if (path === "/login") return <LoginPage />;
+  if (path === "/register") return <RegisterPage />;
+  
   return (
     <div className="app">
       <div className="logo-container">

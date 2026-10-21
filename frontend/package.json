@@ -5,11 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "bun --hot src/index.ts",
-    "build": "bun build ./src/index.html --outdir=dist --sourcemap --target=browser --minify --define:process.env.NODE_ENV='\"production\"' --env='BUN_PUBLIC_*'",
+    "build": "bun --env-file=../.env build ./src/index.html --outdir=dist --public-path=/ --sourcemap --target=browser --minify --define:process.env.NODE_ENV='\"production\"' --env='BUN_PUBLIC_*'",
+    "build:watch": "bun --env-file=../.env build ./src/index.html --outdir=dist --public-path=/ --target=browser --watch --env='BUN_PUBLIC_*'",
     "start": "NODE_ENV=production bun src/index.ts",
     "typecheck": "bun check"
   },
   "dependencies": {
+    "@googlemaps/markerclusterer": "^2.6.2",
+    "@vis.gl/react-google-maps": "^1.10.1",
     "react": "^19",
     "react-dom": "^19"
   },
