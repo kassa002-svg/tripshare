@@ -1,6 +1,7 @@
 export interface User {
   id: string;
 
+  role: "user" | "admin";
   passwordHash: string | null;
   googleId: string | null;
   email: string;
@@ -10,6 +11,7 @@ export interface User {
   following: string[]; // array of ids
   savedItineraries: string[]; // array of ids
   createdAt: string;
+  updatedAt: string;
 }
 
 export interface ItineraryItem {
@@ -22,6 +24,7 @@ export interface ItineraryItem {
   placeId: string; // Google Places id
   order: number; // position in itinerary
   createdAt: string;
+  updatedAt: string;
 }
 
 export interface Itinerary {
@@ -46,4 +49,5 @@ export interface Comment {
   authorId: string;
   text: string;
   createdAt: string;
+  updatedAt: string;
 }

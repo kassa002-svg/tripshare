@@ -5,11 +5,12 @@ import type { User } from "../types";
 
 const router = Router();
 
-router.post("/signup", async (req: Request, res: Response) => {
+router.post("/register", async (req: Request, res: Response) => {
   // no validation on mvp
 
   const user: User = {
     id: new ObjectId().toHexString(),
+    role: req.body.role,
     googleId: req.body.googleId,
     email: req.body.email,
     displayName: req.body.displayName,
@@ -18,6 +19,7 @@ router.post("/signup", async (req: Request, res: Response) => {
     following: [],
     savedItineraries: [],
     createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
     passwordHash: "temp",
   };
 
