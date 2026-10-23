@@ -1,7 +1,7 @@
 import { Router, type Request, type Response } from "express";
 import { ObjectId } from "mongodb";
 import { getDB } from "../db";
-import type { User } from "../types";
+import type { User } from "../models/User";
 
 const router = Router();
 
