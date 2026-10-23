@@ -1,6 +1,7 @@
 import express, { type Express, type Request, type Response } from "express";
 import usersRouter from "./routes/users";
 import authRouter from "./routes/auth";
+import { connectDB } from "./db";
 
 const app: Express = express();
 const port = 3001;
@@ -34,6 +35,13 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.use("/api/users", usersRouter);
+
+try {
+  await connectDB();
+} catch (err) {
+  console.error("Startup failed:", err instanceof Error ? err.message : err);
+  process.exit(1);
+}
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
