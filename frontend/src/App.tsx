@@ -3,10 +3,14 @@ import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import "./index.css";
 import ProfileNavBar from "./ProfilePage";
 
+import { MapPage } from "./Pages/Map";
 
 const googleClientId = "193727342680-2rm8o1lojootujg6cvccdfbb3mvnv3le.apps.googleusercontent.com";
 
 export function App() {
+  const path = window.location.pathname;
+  if(path === "/map") return <MapPage/>;
+
   const [oauthResult, setOauthResult] = useState("Not tested yet.");
 
   const testGoogleOAuth = async (response: any) => {
