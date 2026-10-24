@@ -32,9 +32,10 @@ export function App() {
 
   return (
     <div>
-      {
-        /*<LoginUI /> */
-      }
+      {/*
+        <LoginUI /> Login UI for later
+      */}
+
       <ProfileNavBar />
 
       <section className="oauth-test">

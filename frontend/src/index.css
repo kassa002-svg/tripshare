@@ -318,9 +318,27 @@ code {
   display: flex;
   justify-content: center; 
   align-items: center;
-  width: 200px;
+  width: 175px;
   height: 50px;
   background-color: lightgray;
   border-radius: 100px;
   font-size: xxl;
+  margin-bottom: 7px;
+}
+
+.googleLogin {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: lightgray;
+
+  display: flex;
+  justify-content: center; 
+  align-items: center;
+}
+
+.googleLogin img {
+  width: 60%;
+  height: 60%;
+  object-fit: cover;
 }

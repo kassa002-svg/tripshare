@@ -1,4 +1,6 @@
 import "./index.css"
+// @ts-ignore
+import googleIcon from "./Google_Favicon_2025.svg.webp"
 
 export function LoginUI() {
     return (
@@ -23,6 +25,9 @@ export function LoginUI() {
             </div>
             <div className="loginButton">
                 Login
+            </div>
+            <div className="googleLogin">
+                <img src={googleIcon} alt="G"></img>
             </div>
         </div>
     )
