@@ -256,3 +256,61 @@ code {
 
   font-size: xx-large;
 }
+
+.loginPage {
+  display: flex;
+  justify-content: flex-start; 
+  align-items: center;
+  flex-direction: column;
+
+  width: 100%;
+  height: 100vh;
+  background-color: white;
+  color: black;
+
+  gap: 2px;
+  padding-top: 10px;
+}
+
+.loginText {
+  display: flex;
+  justify-content: flex-start; 
+  align-items: center;
+  text-decoration: underline;
+  align-self: flex-start;
+}
+
+.textInput {
+  display: flex;
+  justify-content: center; 
+  align-items: center;
+  width: 500px;
+  height: 50px;
+  border-radius: 10px;
+  background-color: lightgray;
+}
+
+.groupingLogin {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.loginAlign {
+  display: flex;
+  justify-content: center; 
+  align-items: center;
+  width: 500px;
+  border-radius: 10px;
+}
+
+.loginButton {
+  display: flex;
+  justify-content: center; 
+  align-items: center;
+  width: 200px;
+  height: 50px;
+  background-color: lightgray;
+  border-radius: 100px;
+  font-size: xxl;
+}

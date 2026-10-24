@@ -1,10 +1,15 @@
 import { APITester } from "./APITester";
 import "./index.css";
 import ProfileNavBar from "./ProfilePage";
+import LoginUI from "./Login"
 
 export function App() {
   return (
     <div>
+        {
+          /*<LoginUI /> */
+        }
+        
         <ProfileNavBar />
         <div className ="profileScreen">
           <div className="center">
@@ -17,6 +22,7 @@ export function App() {
           <div className ="bigProfilePicture">
           </div>
         </div>
+        
         {/*
           <div className="app">
         <h1>Profile</h1>
