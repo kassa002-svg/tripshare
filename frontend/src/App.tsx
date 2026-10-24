@@ -6,10 +6,10 @@ import LoginUI from "./Login"
 export function App() {
   return (
     <div>
-        {
-          /*<LoginUI /> */
-        }
-        
+        {/*
+          <LoginUI /> Login UI for later
+        */}
+
         <ProfileNavBar />
         <div className ="profileScreen">
           <div className="center">
@@ -22,7 +22,6 @@ export function App() {
           <div className ="bigProfilePicture">
           </div>
         </div>
-        
         {/*
           <div className="app">
         <h1>Profile</h1>
