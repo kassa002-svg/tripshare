@@ -1,4 +1,5 @@
 import { Router, type Request, type Response } from "express";
+import bcrypt from "bcrypt";
 import { ObjectId } from "mongodb";
 import { getDB } from "../db";
 import type { User } from "../models/User";
@@ -6,7 +7,12 @@ import type { User } from "../models/User";
 const router = Router();
 
 router.post("/register", async (req: Request, res: Response) => {
-  // no validation on mvp
+  if (typeof req.body.password !== "string") {
+    res.status(400).json({ error: "Password is required" });
+    return;
+  }
+
+  const passwordHash = await bcrypt.hash(req.body.password, 10);
 
   const user: User = {
     id: new ObjectId().toHexString(),
@@ -20,7 +26,7 @@ router.post("/register", async (req: Request, res: Response) => {
     savedItineraries: [],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-    passwordHash: "temp",
+    passwordHash,
   };
 
   await getDB().collection<User>("users").insertOne(user);
