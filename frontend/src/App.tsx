@@ -2,6 +2,7 @@ import { useState } from "react";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import "./index.css";
 import ProfileNavBar from "./ProfilePage";
+import LoginUI from "./Login"
 
 import { MapPage } from "./Pages/Map";
 
@@ -31,6 +32,9 @@ export function App() {
 
   return (
     <div>
+      {
+        /*<LoginUI /> */
+      }
       <ProfileNavBar />
 
       <section className="oauth-test">
@@ -46,13 +50,26 @@ export function App() {
         <p>{oauthResult}</p>
       </section>
 
-      <div className="profileScreen">
+      <div className ="profileScreen">
         <div className="center">
-          <div className="samplePlus">+</div>
-          <div className="samplePost"></div>
+            <div className="samplePlus">
+               +
+            </div>
+            <div className="samplePost">
+            </div>
         </div>
-        <div className="bigProfilePicture"></div>
+        <div className ="bigProfilePicture">
+        </div>
       </div>
+      {/*
+        <div className="app">
+      <h1>Profile</h1>
+      <p>
+        Edit <code>src/App.tsx</code>
+      </p>
+      <APITester />
+    </div>
+      */}
     </div>
   );
 }
