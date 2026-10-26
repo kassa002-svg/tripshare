@@ -4,12 +4,16 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "bun --hot src/index.ts",
+    "dev": "bun --env-file=../.env --hot src/index.ts",
     "build": "bun build ./src/index.html --outdir=dist --sourcemap --target=browser --minify --define:process.env.NODE_ENV='\"production\"' --env='BUN_PUBLIC_*'",
     "start": "NODE_ENV=production bun src/index.ts",
     "typecheck": "bun check"
   },
   "dependencies": {
+    "@googlemaps/markerclusterer": "^2.6.2",
+    "@react-oauth/google": "^0.13.5",
+    "@vis.gl/react-google-maps": "^1.10.1",
+    "dotenv": "^18.0.8",
     "react": "^19",
     "react-dom": "^19"
   },
