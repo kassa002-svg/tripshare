@@ -1,15 +1,16 @@
+import "./index.css";
 import { useState } from "react";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
-import "./index.css";
 import ProfileNavBar from "./ProfilePage";
-
 import { MapPage } from "./Pages/Map";
 
-const googleClientId = "193727342680-2rm8o1lojootujg6cvccdfbb3mvnv3le.apps.googleusercontent.com";
+const googleClientId =
+  "193727342680-2rm8o1lojootujg6cvccdfbb3mvnv3le.apps.googleusercontent.com";
+import LoginUI from "./Login";
 
 export function App() {
   const path = window.location.pathname;
-  if(path === "/map") return <MapPage/>;
+  if (path === "/map") return <MapPage />;
 
   const [oauthResult, setOauthResult] = useState("Not tested yet.");
 
@@ -23,7 +24,6 @@ export function App() {
 
       const data = await result.json();
       setOauthResult(data.message || data.error);
-
     } catch {
       setOauthResult("Could not connect to backend.");
     }
@@ -50,8 +50,12 @@ export function App() {
         <div className="center">
           <div className="samplePlus">+</div>
           <div className="samplePost"></div>
+          {/*
+          <LoginUI /> Login UI for later
+        */}
+
+          <div className="bigProfilePicture"></div>
         </div>
-        <div className="bigProfilePicture"></div>
       </div>
     </div>
   );
