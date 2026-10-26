@@ -1,5 +1,3 @@
-import "./index.css";
-
 export default function ProfileNavbar() {
   return (
     <div className="profileNavBar">
