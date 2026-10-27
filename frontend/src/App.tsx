@@ -1,9 +1,9 @@
 import "./index.css";
-import ProfileNavBar from "./ProfilePage";
-import FeedPage from "./pages/Feed";
-import MapPage from "./pages/Map";
-import NotFound from "./pages/NotFound";
-import OAuthTest from "./pages/OAuthTest";
+import ProfileNavBar from "./components/ProfileNavbar";
+import FeedPage from "./Pages/Feed";
+import MapPage from "./Pages/Map";
+import NotFound from "./Pages/NotFound";
+import OAuthTest from "./Pages/OAuthTest";
 
 export function App() {
   const path = window.location.pathname;
