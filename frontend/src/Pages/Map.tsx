@@ -1,4 +1,8 @@
-import { APIProvider, Map, type MapCameraChangedEvent } from "@vis.gl/react-google-maps";
+import {
+  APIProvider,
+  Map,
+  type MapCameraChangedEvent,
+} from "@vis.gl/react-google-maps";
 
 function readApiKey(): string | undefined {
   try {
@@ -10,7 +14,7 @@ function readApiKey(): string | undefined {
 
 const API_KEY = readApiKey();
 
-export function MapPage() {
+export default function MapPage() {
   if (!API_KEY) {
     return (
       <main>
@@ -24,12 +28,22 @@ export function MapPage() {
   }
 
   return (
-    <APIProvider apiKey={API_KEY} onLoad={() => console.log("Maps API has loaded.")}>
+    <APIProvider
+      apiKey={API_KEY}
+      onLoad={() => console.log("Maps API has loaded.")}
+    >
       {}
       <div style={{ width: "100vw", height: "100vh" }}>
-        <Map defaultZoom={17} defaultCenter={{ lat: 33.9737, lng: -117.3281 }}
+        <Map
+          defaultZoom={17}
+          defaultCenter={{ lat: 33.9737, lng: -117.3281 }}
           onCameraChanged={(ev: MapCameraChangedEvent) =>
-            console.log("camera changed:", ev.detail.center, "zoom:", ev.detail.zoom)
+            console.log(
+              "camera changed:",
+              ev.detail.center,
+              "zoom:",
+              ev.detail.zoom,
+            )
           }
         />
       </div>
