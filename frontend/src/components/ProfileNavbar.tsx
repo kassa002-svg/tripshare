@@ -1,6 +1,4 @@
-import "./index.css";
-
-export function ProfileNavBar() {
+export default function ProfileNavbar() {
   return (
     <div className="profileNavBar">
       <span>Home</span>
@@ -9,5 +7,3 @@ export function ProfileNavBar() {
     </div>
   );
 }
-
-export default ProfileNavBar;
