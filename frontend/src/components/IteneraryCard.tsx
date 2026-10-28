@@ -1,4 +1,4 @@
-import type { Itinerary } from "backend/types";
+import type { Itinerary } from "backend/models/Itinerary";
 import { Heart, MapPin, ArrowUpRight } from "lucide-react";
 
 export default function ItineraryCard({

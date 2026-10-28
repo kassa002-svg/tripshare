@@ -3,6 +3,8 @@ import session from "express-session";
 import usersRouter from "./routes/users";
 import authRouter from "./routes/auth";
 import { connectDB } from "./db";
+import { ensureItineraryIndexes } from "./setupItineraries";
+
 
 const app: Express = express();
 const port = 3001;
@@ -48,6 +50,7 @@ app.use("/api/users", usersRouter);
 
 try {
   await connectDB();
+  await ensureItineraryIndexes();
 } catch (err) {
   console.error("Startup failed:", err instanceof Error ? err.message : err);
   process.exit(1);
