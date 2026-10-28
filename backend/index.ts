@@ -1,4 +1,5 @@
 import express, { type Express, type Request, type Response } from "express";
+import session from "express-session";
 import usersRouter from "./routes/users";
 import authRouter from "./routes/auth";
 import { connectDB } from "./db";
@@ -16,6 +17,7 @@ app.use((req, res, next) => {
   if (origin && frontendOrigins.has(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
     res.setHeader("Vary", "Origin");
+    res.setHeader("Access-Control-Allow-Credentials", "true");
   }
 
   if (req.method === "OPTIONS") {
@@ -28,6 +30,14 @@ app.use((req, res, next) => {
   next();
 });
 app.use(express.json());
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "secret",
+    resave: false,
+    saveUninitialized: false,
+    cookie: { httpOnly: true, sameSite: "lax" },
+  }),
+);
 app.use("/api/auth", authRouter);
 
 app.get("/", (req: Request, res: Response) => {
