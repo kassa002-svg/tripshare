@@ -1,5 +1,6 @@
 import "./index.css";
 import ProfileNavBar from "./components/ProfileNavbar";
+import Friend from "./Friend"
 import FeedPage from "./Pages/Feed";
 import MapPage from "./Pages/Map";
 import NotFound from "./Pages/NotFound";
@@ -10,12 +11,13 @@ export function App() {
 
   if (path === "/map") return <MapPage />;
   if (path === "/feed") return <FeedPage />;
-  if (path === "/") return <OAuthTest />;
+  if (path === "/") return <OAuthTest />; 
 
   if (path === "/profile") {
     return (
       <div>
         <ProfileNavBar />
+        <Friend />
 
         <div className="profileScreen">
           <div className="center">
@@ -27,6 +29,13 @@ export function App() {
       </div>
     );
   }
+
+  /* return ( Friend UI
+    <div>
+      <ProfileNavBar />
+      <Friend />
+    </div>
+  ); */
 
   return <NotFound />;
 }
