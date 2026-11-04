@@ -1,4 +1,4 @@
-import "./index.css"
+import "../index.css"
 'use client';
 import {useState} from "react";
 
