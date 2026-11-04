@@ -7,15 +7,30 @@ import OAuthTest from "./pages/OAuthTest";
 import NewPost from "./pages/NewPost";
 import ItineraryPage from "./pages/Itinerary";
 import { SessionProvider } from "./Session";
-import Profile from "./Pages/Profile";
-import LoginUI from "./Pages/Login";
+import Profile from "./pages/Profile";
+import LoginUI from "./pages/Login";
 
 export function App() {
   const path = window.location.pathname;
 
-  if (path === "/") return <OAuthTest />;
-  if (path === "/map") return <MapPage />;
-  if (path === "/feed") return <FeedPage />;
+  if (path === "/")
+    return (
+      <SessionProvider>
+        <OAuthTest />
+      </SessionProvider>
+    );
+  if (path === "/map")
+    return (
+      <SessionProvider>
+        <MapPage />
+      </SessionProvider>
+    );
+  if (path === "/feed")
+    return (
+      <SessionProvider>
+        <FeedPage />
+      </SessionProvider>
+    );
   if (path === "/itineraries/new") return <NewPost />;
   if (path.startsWith("/itineraries/")) {
     const sp = path.split("/");

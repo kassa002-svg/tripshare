@@ -31,6 +31,7 @@ export default function FeedPage() {
 
       try {
         const response = await fetch("http://localhost:3001/api/itineraries", {
+          credentials: "include",
           signal: controller.signal,
         });
         const json: unknown = await response.json();

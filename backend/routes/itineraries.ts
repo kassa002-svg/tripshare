@@ -5,7 +5,11 @@ const router = Router();
 
 import { authenticate } from "../middleware/authenticate";
 import { toGeoPoint } from "../models/geo";
-import type { CreateItineraryBody, Itinerary } from "../models/Itinerary";
+import type {
+  CreateItineraryBody,
+  Itinerary,
+  ItineraryItem,
+} from "../models/Itinerary";
 
 router.post("/", authenticate, async (req: Request, res: Response) => {
   const body = req.body as CreateItineraryBody;
@@ -84,17 +88,29 @@ router.patch("/:id", authenticate, async (req: Request, res: Response) => {
   const now = new Date().toISOString();
   const { _id, ...existing } = old;
   const items: ItineraryItem[] = (req.body.items ?? old.items).map(
-    (item: Partial<ItineraryItem>, index: number) => ({
-      id: item.id ?? new ObjectId().toHexString(),
-      itineraryId: req.params.id,
-      name: item.name,
-      description: item.description ?? "",
-      photoUrl: item.photoUrl ?? "",
-      placeId: item.placeId,
-      order: item.order ?? index,
-      createdAt: item.createdAt ?? now,
-      updatedAt: now,
-    }),
+    (item: Partial<ItineraryItem>, index: number) => {
+      const oldItem =
+        old.items.find((existingItem) => existingItem.id === item.id) ??
+        old.items[index];
+
+      return {
+        id: item.id ?? new ObjectId().toHexString(),
+        itineraryId: req.params.id,
+        name: item.name ?? oldItem?.name ?? "",
+        description: item.description ?? oldItem?.description ?? "",
+        photoUrl: item.photoUrl ?? oldItem?.photoUrl ?? "",
+        placeId: item.placeId ?? oldItem?.placeId ?? "",
+        address: item.address ?? oldItem?.address ?? "",
+        location: item.location ?? oldItem?.location ?? {
+          type: "Point",
+          coordinates: [0, 0],
+        },
+        category: item.category ?? oldItem?.category ?? null,
+        order: item.order ?? oldItem?.order ?? index,
+        createdAt: item.createdAt ?? oldItem?.createdAt ?? now,
+        updatedAt: now,
+      };
+    },
   );
 
   const updatedItinerary: Itinerary = {
