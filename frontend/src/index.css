@@ -343,3 +343,41 @@ code {
   height: 60%;
   object-fit: cover;
 }
+
+.friendMainPage {
+  width: 100%;
+  height: 100vh;
+  background-color: white;
+
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 5px;
+  position: relative;
+}
+
+.friendFeed {
+  width: 550px;
+  height: 150px;
+  background-color: darkgray;
+  border-radius: 10px;
+}
+
+.userSearch {
+  width: 550px;
+  height: 50px;
+  border: 3px solid black;
+  border-radius: 10px;
+  color: darkgray;
+  font-size: 2rem;
+  margin-top: 10px;
+}
+
+.filter {
+  text-align: center;
+
+  width: 100px;
+  height: 30px;
+  background-color: darkgray;
+  border-radius: 10px;
+}
