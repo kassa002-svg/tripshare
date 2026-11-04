@@ -53,7 +53,7 @@ router.post("/", authenticate, async (req: Request, res: Response) => {
   res.status(201).json({ message: "Itinerary saved", id: itineraryId });
 });
 
-router.get("/", authenticate, async (_req: Request, res: Response) => {
+router.get("/", async (_req: Request, res: Response) => {
   const itineraries = await getDB()
     .collection<Itinerary>("itineraries")
     .find({})
@@ -62,7 +62,7 @@ router.get("/", authenticate, async (_req: Request, res: Response) => {
   res.json(itineraries);
 });
 
-router.get("/:id", authenticate, async (req: Request, res: Response) => {
+router.get("/:id", async (req: Request, res: Response) => {
   const itinerary = await getDB()
     .collection<Itinerary>("itineraries")
     .findOne({ id: req.params.id });
@@ -101,10 +101,11 @@ router.patch("/:id", authenticate, async (req: Request, res: Response) => {
         photoUrl: item.photoUrl ?? oldItem?.photoUrl ?? "",
         placeId: item.placeId ?? oldItem?.placeId ?? "",
         address: item.address ?? oldItem?.address ?? "",
-        location: item.location ?? oldItem?.location ?? {
-          type: "Point",
-          coordinates: [0, 0],
-        },
+        location: item.location ??
+          oldItem?.location ?? {
+            type: "Point",
+            coordinates: [0, 0],
+          },
         category: item.category ?? oldItem?.category ?? null,
         order: item.order ?? oldItem?.order ?? index,
         createdAt: item.createdAt ?? oldItem?.createdAt ?? now,
