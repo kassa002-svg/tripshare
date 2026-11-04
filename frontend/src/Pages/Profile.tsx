@@ -1,5 +1,6 @@
 import ProfileNavbar from "../components/ProfileNavbar";
 import { useSession } from "../Session";
+import Friend from "../components/Friend";
 
 export default function Profile() {
   const { user, error, signOut } = useSession();
@@ -19,6 +20,7 @@ export default function Profile() {
         )}
 
         {user && (
+        <>
           <section className="profileCard">
             <div className="profileHeader">
               {user.avatar && (
@@ -46,6 +48,8 @@ export default function Profile() {
               Sign out
             </button>
           </section>
+          <Friend />    
+          </>      
         )}
       </main>
     </div>
