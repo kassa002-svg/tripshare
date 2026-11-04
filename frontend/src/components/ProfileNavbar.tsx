@@ -1,5 +1,4 @@
-import Dropdown from "../DropdownLogin.tsx";
-import Login from "../Login.tsx";
+import Dropdown from "./DropdownLogin.tsx";
 
 export default function ProfileNavbar() {
   const loggedIn = true;
