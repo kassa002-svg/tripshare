@@ -4,12 +4,14 @@ import FeedPage from "./Pages/Feed";
 import MapPage from "./Pages/Map";
 import NotFound from "./Pages/NotFound";
 import OAuthTest from "./Pages/OAuthTest";
+import NewPost from "./pages/NewPost";
 
 export function App() {
   const path = window.location.pathname;
 
   if (path === "/map") return <MapPage />;
   if (path === "/feed") return <FeedPage />;
+  if (path === "/itineraries/new") return <NewPost />;
   if (path === "/") return <OAuthTest />;
 
   if (path === "/profile") {
