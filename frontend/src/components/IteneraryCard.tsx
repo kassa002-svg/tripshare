@@ -1,4 +1,4 @@
-import type { Itinerary } from "backend/types";
+import type { Itinerary } from "backend/models/Itinerary";
 import { Heart, MapPin, ArrowUpRight } from "lucide-react";
 
 export default function ItineraryCard({
@@ -14,7 +14,7 @@ export default function ItineraryCard({
 
   return (
     <a
-      href={`/itinerary/${itinerary.id}`}
+      href={`/itineraries/${itinerary.id}`}
       className="relative w-full cursor-pointer rounded bg-white"
     >
       <div className="p-5">

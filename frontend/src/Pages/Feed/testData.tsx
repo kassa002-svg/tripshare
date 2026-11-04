@@ -1,4 +1,4 @@
-import { type Itinerary } from "backend/types";
+import type { Itinerary } from "backend/models/Itinerary";
 
 export const testItineraries: Itinerary[] = [
   {
