@@ -1,26 +1,25 @@
 import type { Itinerary, ItineraryItem } from "backend/models/Itinerary";
 type PlaceInfo = Pick<ItineraryItem, "address" | "location" | "category">;
 
-
 const PLACES = {
   botanicGardens: {
     address: "900 University Ave, Riverside, CA 92521",
-    location: { type: "Point", coordinates: [-117.3200, 33.9690] },
+    location: { type: "Point", coordinates: [-117.32, 33.969] },
     category: "botanical_garden",
   },
   barn: {
     address: "900 University Ave, Riverside, CA 92521",
-    location: { type: "Point", coordinates: [-117.3280, 33.9760] },
+    location: { type: "Point", coordinates: [-117.328, 33.976] },
     category: "restaurant",
   },
   universityVillage: {
     address: "1201 University Ave, Riverside, CA 92507",
-    location: { type: "Point", coordinates: [-117.3380, 33.9757] },
+    location: { type: "Point", coordinates: [-117.338, 33.9757] },
     category: "shopping_mall",
   },
   arcadeCoffee: {
     address: "Riverside, CA",
-    location: { type: "Point", coordinates: [-117.3300, 33.9530] },
+    location: { type: "Point", coordinates: [-117.33, 33.953] },
     category: "coffee_shop",
   },
   missionInn: {
@@ -40,16 +39,15 @@ const PLACES = {
   },
   sycamoreCanyon: {
     address: "400 Central Ave, Riverside, CA 92507",
-    location: { type: "Point", coordinates: [-117.3080, 33.9430] },
+    location: { type: "Point", coordinates: [-117.308, 33.943] },
     category: "park",
   },
   ucrArts: {
     address: "3824 Main St, Riverside, CA 92501",
-    location: { type: "Point", coordinates: [-117.3753, 33.9820] },
+    location: { type: "Point", coordinates: [-117.3753, 33.982] },
     category: "museum",
   },
 } satisfies Record<string, PlaceInfo>;
-
 
 export const testItineraries: Itinerary[] = [
   {

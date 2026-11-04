@@ -14,7 +14,7 @@ export default function ItineraryCard({
 
   return (
     <a
-      href={`/itinerary/${itinerary.id}`}
+      href={`/itineraries/${itinerary.id}`}
       className="relative w-full cursor-pointer rounded bg-white"
     >
       <div className="p-5">

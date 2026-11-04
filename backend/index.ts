@@ -6,7 +6,6 @@ import { connectDB } from "./db";
 import { ensureItineraryIndexes } from "./setupItineraries";
 import itinerariesRouter from "./routes/itineraries";
 
-
 const app: Express = express();
 const port = 3001;
 const frontendOrigins = new Set([
