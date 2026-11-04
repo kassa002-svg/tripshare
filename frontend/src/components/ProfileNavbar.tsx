@@ -16,8 +16,8 @@ export default function ProfileNavbar() {
     <div className="profileNavBar">
       <h2 className="text-xl font-semibold">TripShare</h2>
       <div className="flex flex-row items-center gap-4">
-        <a href="/" className="hover:underline">
-          Home
+        <a href="/feed" className="hover:underline">
+          Feed
         </a>
         <a href="/" className="hover:underline">
           Friends
