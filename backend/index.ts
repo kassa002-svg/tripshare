@@ -3,6 +3,7 @@ import session from "express-session";
 import usersRouter from "./routes/users";
 import authRouter from "./routes/auth";
 import { connectDB } from "./db";
+import itinerariesRouter from "./routes/itineraries";
 
 const app: Express = express();
 const port = 3001;
@@ -45,6 +46,7 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.use("/api/users", usersRouter);
+app.use("/api/itineraries", itinerariesRouter);
 
 try {
   await connectDB();
