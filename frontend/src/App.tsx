@@ -4,6 +4,7 @@ import FeedPage from "./Pages/Feed";
 import MapPage from "./Pages/Map";
 import NotFound from "./Pages/NotFound";
 import OAuthTest from "./Pages/OAuthTest";
+import Dropdown from "./DropdownLogin";
 
 export function App() {
   const path = window.location.pathname;
@@ -16,7 +17,6 @@ export function App() {
     return (
       <div>
         <ProfileNavBar />
-
         <div className="profileScreen">
           <div className="center">
             <div className="samplePlus">+</div>

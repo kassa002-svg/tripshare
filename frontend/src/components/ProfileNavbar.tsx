@@ -1,3 +1,6 @@
+import Dropdown from "../DropdownLogin.tsx";
+import Login from "../Login.tsx";
+
 export default function ProfileNavbar() {
   const loggedIn = true;
 
@@ -22,7 +25,8 @@ export default function ProfileNavbar() {
         <a href="/" className="hover:underline">
           Friends
         </a>
-        <div className="profileCircle"></div>
+        {/*<button type="button" className="profileCircle"></button>*/}
+        <Dropdown />
       </div>
     </div>
   );

@@ -216,6 +216,7 @@ code {
   border-radius: 50%;
   background-color: darkgray;
   color: black;
+  position: relative;
 }
 
 .profileScreen {
@@ -342,4 +343,19 @@ code {
   width: 60%;
   height: 60%;
   object-fit: cover;
+}
+
+.loginDropdown {
+  width: 80px;
+  height: 35px;
+  border: 1px solid black;
+  background-color: lightgray;
+  font-size: medium;
+  color: black;
+  transform: translate(-15px, 10px);
+
+  display: flex;
+  justify-content: center; 
+  align-items: center;
+  position: absolute;
 }
