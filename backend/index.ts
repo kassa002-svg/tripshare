@@ -3,6 +3,7 @@ import session from "express-session";
 import usersRouter from "./routes/users";
 import authRouter from "./routes/auth";
 import { connectDB } from "./db";
+import { ensureItineraryIndexes } from "./setupItineraries";
 import itinerariesRouter from "./routes/itineraries";
 
 const app: Express = express();
@@ -22,7 +23,7 @@ app.use((req, res, next) => {
   }
 
   if (req.method === "OPTIONS") {
-    res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
     res.setHeader("Access-Control-Allow-Headers", "Content-Type");
     res.sendStatus(204);
     return;
@@ -50,6 +51,7 @@ app.use("/api/itineraries", itinerariesRouter);
 
 try {
   await connectDB();
+  await ensureItineraryIndexes();
 } catch (err) {
   console.error("Startup failed:", err instanceof Error ? err.message : err);
   process.exit(1);

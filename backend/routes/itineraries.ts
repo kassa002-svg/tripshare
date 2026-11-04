@@ -1,45 +1,55 @@
 import { Router, type Request, type Response } from "express";
 import { ObjectId } from "mongodb";
 import { getDB } from "../db";
-import type { Itinerary, ItineraryItem } from "../models/Itinerary";
-
 const router = Router();
 
-router.post("/", async (req: Request, res: Response) => {
-  const id = new ObjectId().toHexString();
+import { authenticate } from "../middleware/authenticate";
+import { toGeoPoint } from "../models/geo";
+import type { CreateItineraryBody, Itinerary } from "../models/Itinerary";
+
+router.post("/", authenticate, async (req: Request, res: Response) => {
+  const body = req.body as CreateItineraryBody;
+
+  if (!body.title || !Array.isArray(body.items) || body.items.length === 0) {
+    res.status(400).json({ error: "Add a title and at least one stop" });
+    return;
+  }
+
   const now = new Date().toISOString();
-  const items: ItineraryItem[] = (req.body.items ?? []).map(
-    (item: Partial<ItineraryItem>, index: number) => ({
-      id: new ObjectId().toHexString(),
-      itineraryId: id,
-      name: item.name,
-      description: item.description ?? "",
-      photoUrl: item.photoUrl ?? "",
-      placeId: item.placeId,
-      order: item.order ?? index,
-      createdAt: now,
-      updatedAt: now,
-    }),
-  );
+  const itineraryId = new ObjectId().toHexString();
 
   const itinerary: Itinerary = {
-    id,
-    authorId: req.body.authorId,
-    title: req.body.title,
-    description: req.body.description ?? "",
-    items,
+    id: itineraryId,
+    authorId: req.session.userId!,
+    title: body.title,
+    description: body.description ?? "",
+    items: body.items.map((item, index) => ({
+      id: new ObjectId().toHexString(),
+      itineraryId,
+      name: item.name,
+      description: item.description ?? "",
+      photoUrl: "",
+      placeId: item.placeId,
+      address: item.address,
+      location: toGeoPoint(item.location),
+      category: item.category,
+      order: index,
+      createdAt: now,
+      updatedAt: now,
+    })),
     likes: [],
     likesCount: 0,
-    copiedFrom: req.body.copiedFrom ?? null,
+    copiedFrom: null,
     createdAt: now,
     updatedAt: now,
   };
 
   await getDB().collection<Itinerary>("itineraries").insertOne(itinerary);
-  res.status(201).json(itinerary);
+
+  res.status(201).json({ message: "Itinerary saved", id: itineraryId });
 });
 
-router.get("/", async (_req: Request, res: Response) => {
+router.get("/", authenticate, async (_req: Request, res: Response) => {
   const itineraries = await getDB()
     .collection<Itinerary>("itineraries")
     .find({})
@@ -48,7 +58,7 @@ router.get("/", async (_req: Request, res: Response) => {
   res.json(itineraries);
 });
 
-router.get("/:id", async (req: Request, res: Response) => {
+router.get("/:id", authenticate, async (req: Request, res: Response) => {
   const itinerary = await getDB()
     .collection<Itinerary>("itineraries")
     .findOne({ id: req.params.id });
@@ -61,7 +71,7 @@ router.get("/:id", async (req: Request, res: Response) => {
   res.json(itinerary);
 });
 
-router.patch("/:id", async (req: Request, res: Response) => {
+router.patch("/:id", authenticate, async (req: Request, res: Response) => {
   const old = await getDB()
     .collection<Itinerary>("itineraries")
     .findOne({ id: req.params.id });

@@ -12,12 +12,14 @@ export default function OAuthTest() {
     try {
       const result = await fetch("http://localhost:3001/api/auth/google", {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ credential: response.credential }),
       });
 
       const data = await result.json();
       setOauthResult(data.message || data.error);
+      if (result.ok) window.location.href = "/profile";
     } catch {
       setOauthResult("Could not connect to backend.");
     }
@@ -28,7 +30,7 @@ export default function OAuthTest() {
       <ProfileNavbar />
 
       <section className="oauth-test">
-        <h2>Test Google OAuth</h2>
+        <h2>Sign IN</h2>
 
         <GoogleOAuthProvider clientId={googleClientId || ""}>
           <GoogleLogin
