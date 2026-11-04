@@ -4,6 +4,7 @@ import usersRouter from "./routes/users";
 import authRouter from "./routes/auth";
 import { connectDB } from "./db";
 import { ensureItineraryIndexes } from "./setupItineraries";
+import itinerariesRouter from "./routes/itineraries";
 
 
 const app: Express = express();
@@ -47,6 +48,7 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.use("/api/users", usersRouter);
+app.use("/api/itineraries", itinerariesRouter);
 
 try {
   await connectDB();
