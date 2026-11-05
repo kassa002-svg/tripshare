@@ -75,6 +75,75 @@ router.get("/:id", async (req: Request, res: Response) => {
   res.json(itinerary);
 });
 
+router.post("/:id/likes", authenticate, async (req: Request, res: Response) => {
+  const itinerary = await getDB()
+    .collection<Itinerary>("itineraries")
+    .findOneAndUpdate(
+      { id: req.params.id },
+      [
+        {
+          $set: {
+            likes: {
+              $setUnion: [{ $ifNull: ["$likes", []] }, [req.session.userId!]],
+            },
+            updatedAt: new Date().toISOString(),
+          },
+        },
+        { $set: { likesCount: { $size: "$likes" } } },
+      ],
+      { projection: { _id: 0 }, returnDocument: "after" },
+    );
+
+  if (!itinerary) {
+    res.status(404).json({ error: "Itinerary does not exist" });
+    return;
+  }
+
+  res.json({
+    liked: true,
+    likes: itinerary.likes,
+    likesCount: itinerary.likesCount,
+  });
+});
+
+router.delete(
+  "/:id/likes",
+  authenticate,
+  async (req: Request, res: Response) => {
+    const itinerary = await getDB()
+      .collection<Itinerary>("itineraries")
+      .findOneAndUpdate(
+        { id: req.params.id },
+        [
+          {
+            $set: {
+              likes: {
+                $setDifference: [
+                  { $ifNull: ["$likes", []] },
+                  [req.session.userId!],
+                ],
+              },
+              updatedAt: new Date().toISOString(),
+            },
+          },
+          { $set: { likesCount: { $size: "$likes" } } },
+        ],
+        { projection: { _id: 0 }, returnDocument: "after" },
+      );
+
+    if (!itinerary) {
+      res.status(404).json({ error: "Itinerary does not exist" });
+      return;
+    }
+
+    res.json({
+      liked: false,
+      likes: itinerary.likes,
+      likesCount: itinerary.likesCount,
+    });
+  },
+);
+
 router.patch("/:id", authenticate, async (req: Request, res: Response) => {
   const old = await getDB()
     .collection<Itinerary>("itineraries")
@@ -120,8 +189,8 @@ router.patch("/:id", authenticate, async (req: Request, res: Response) => {
     title: req.body.title ?? old.title,
     description: req.body.description ?? old.description,
     items,
-    likes: req.body.likes ?? old.likes,
-    likesCount: (req.body.likes ?? old.likes).length,
+    likes: old.likes,
+    likesCount: old.likesCount,
     copiedFrom: req.body.copiedFrom ?? old.copiedFrom,
     updatedAt: now,
   };
