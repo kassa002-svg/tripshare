@@ -75,7 +75,8 @@ router.get("/:id", async (req: Request, res: Response) => {
   res.json(itinerary);
 });
 
-router.post("/:id/likes", authenticate, async (req: Request, res: Response) => {
+router.patch("/:id/likes", authenticate, async (req: Request, res: Response) => {
+  const userId = req.session.userId!;
   const itinerary = await getDB()
     .collection<Itinerary>("itineraries")
     .findOneAndUpdate(
@@ -84,7 +85,16 @@ router.post("/:id/likes", authenticate, async (req: Request, res: Response) => {
         {
           $set: {
             likes: {
-              $setUnion: [{ $ifNull: ["$likes", []] }, [req.session.userId!]],
+              $cond: [
+                { $in: [userId, { $ifNull: ["$likes", []] }] },
+                {
+                  $setDifference: [
+                    { $ifNull: ["$likes", []] },
+                    [userId],
+                  ],
+                },
+                { $setUnion: [{ $ifNull: ["$likes", []] }, [userId]] },
+              ],
             },
             updatedAt: new Date().toISOString(),
           },
@@ -100,49 +110,11 @@ router.post("/:id/likes", authenticate, async (req: Request, res: Response) => {
   }
 
   res.json({
-    liked: true,
+    liked: itinerary.likes.includes(userId),
     likes: itinerary.likes,
     likesCount: itinerary.likesCount,
   });
 });
-
-router.delete(
-  "/:id/likes",
-  authenticate,
-  async (req: Request, res: Response) => {
-    const itinerary = await getDB()
-      .collection<Itinerary>("itineraries")
-      .findOneAndUpdate(
-        { id: req.params.id },
-        [
-          {
-            $set: {
-              likes: {
-                $setDifference: [
-                  { $ifNull: ["$likes", []] },
-                  [req.session.userId!],
-                ],
-              },
-              updatedAt: new Date().toISOString(),
-            },
-          },
-          { $set: { likesCount: { $size: "$likes" } } },
-        ],
-        { projection: { _id: 0 }, returnDocument: "after" },
-      );
-
-    if (!itinerary) {
-      res.status(404).json({ error: "Itinerary does not exist" });
-      return;
-    }
-
-    res.json({
-      liked: false,
-      likes: itinerary.likes,
-      likesCount: itinerary.likesCount,
-    });
-  },
-);
 
 router.patch("/:id", authenticate, async (req: Request, res: Response) => {
   const old = await getDB()

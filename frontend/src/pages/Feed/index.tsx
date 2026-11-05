@@ -12,6 +12,8 @@ function isItinerary(value: unknown): value is Itinerary {
     typeof itinerary.title === "string" &&
     typeof itinerary.description === "string" &&
     Array.isArray(itinerary.items) &&
+    Array.isArray(itinerary.likes) &&
+    itinerary.likes.every((userId) => typeof userId === "string") &&
     typeof itinerary.likesCount === "number"
   );
 }

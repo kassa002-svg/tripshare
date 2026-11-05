@@ -34,7 +34,11 @@ export function App() {
   if (path === "/itineraries/new") return <NewPost />;
   if (path.startsWith("/itineraries/")) {
     const sp = path.split("/");
-    return <ItineraryPage id={sp?.[sp.length - 1] ?? ""} />;
+    return (
+      <SessionProvider>
+        <ItineraryPage id={sp?.[sp.length - 1] ?? ""} />
+      </SessionProvider>
+    );
   }
 
   if (path === "/profile")
