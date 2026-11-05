@@ -133,7 +133,7 @@ router.patch("/:id", authenticate, async (req: Request, res: Response) => {
   res.json(updatedItinerary);
 });
 
-router.delete("/:id", async (req: Request, res: Response) => {
+router.delete("/:id", authenticate, async (req: Request, res: Response) => {
   const result = await getDB()
     .collection<Itinerary>("itineraries")
     .deleteOne({ id: req.params.id });
