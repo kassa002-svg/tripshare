@@ -1,0 +1,25 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      ATLAS_URI: $ATLAS_URI
+    ports:
+      - "3001:3001"
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      PORT: 3000
+    ports:
+      - "3000:3000"
+
+volumes:
+  mongo_data:
