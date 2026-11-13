@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import ProfileNavbar from "@/components/ProfileNavbar";
+import { API_BASE } from "@/apiBase";
 
 const googleClientId =
   "193727342680-2rm8o1lojootujg6cvccdfbb3mvnv3le.apps.googleusercontent.com";
@@ -10,7 +11,7 @@ export default function OAuthTest() {
 
   const testGoogleOAuth = async (response: any) => {
     try {
-      const result = await fetch("http://localhost:3001/api/auth/google", {
+      const result = await fetch(`${API_BASE}/api/auth/google`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },

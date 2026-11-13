@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { APIProvider, InfoWindow, Map, useMapsLibrary, type MapMouseEvent, } from "@vis.gl/react-google-maps";
 import type { CreateItineraryBody, NewItineraryItem } from "backend/models/Itinerary";
+import { API_BASE } from "@/apiBase";
 import "./Map.css";
 
 function readApiKey(): string | undefined {
@@ -89,7 +90,7 @@ function ItineraryBuilder() {
     const body: CreateItineraryBody = { title: title.trim(), description: "", items: stops };
 
     try {
-      const res = await fetch("http://localhost:3001/api/itineraries", {
+      const res = await fetch(`${API_BASE}/api/itineraries`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
