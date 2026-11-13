@@ -230,6 +230,24 @@ code {
   background-color: darkgray;
   color: black;
   position: relative;
+  border: none;
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.profileCircle img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profileDropdown {
+  position: relative;
 }
 
 .profileScreen {
@@ -303,6 +321,29 @@ code {
   padding-top: 10px;
 }
 
+.loginForm {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 500px;
+  color: black;
+}
+
+.loginForm input {
+  width: 100%;
+  height: 40px;
+  box-sizing: border-box;
+  padding: 8px;
+  border: 1px solid gray;
+  border-radius: 6px;
+  background: white;
+  color: black;
+}
+
+.loginForm a {
+  color: black;
+}
+
 .loginText {
   display: flex;
   justify-content: flex-start; 
@@ -358,6 +399,10 @@ code {
   align-items: center;
 }
 
+.googleLoginButton {
+  margin-top: 12px;
+}
+
 .googleLogin img {
   width: 60%;
   height: 60%;
@@ -365,19 +410,38 @@ code {
 }
 
 .loginDropdown {
-  width: 80px;
-  height: 35px;
-  border: 1px solid black;
-  background-color: lightgray;
-  font-size: medium;
+  width: 140px;
+  margin-top: 8px;
+  padding: 6px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background-color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   color: black;
-  transform: translate(-15px, 10px);
-
-  display: flex;
-  justify-content: center; 
-  align-items: center;
   position: absolute;
+  right: 0;
+  z-index: 10;
 }
+
+
+.loginDropdownItem {
+  display: block;
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+  border: none;
+  border-radius: 5px;
+  background-color: white;
+  color: black;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.loginDropdownItem:hover {
+  background-color: #f1f1f1;
+}
+
 
 .friendMainPage {
   width: 100%;

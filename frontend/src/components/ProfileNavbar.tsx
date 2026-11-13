@@ -1,9 +1,10 @@
 import Dropdown from "./DropdownLogin.tsx";
+import {useSession} from "../Session.tsx";
 
 export default function ProfileNavbar() {
-  const loggedIn = true;
+  const { user } = useSession();
 
-  if (!loggedIn) {
+  if (!user) {
     return (
       <div className="profileNavBar">
         <h2 className="text-xl font-semibold">TripShare</h2>
@@ -25,7 +26,7 @@ export default function ProfileNavbar() {
           Friends
         </a>
         {/*<button type="button" className="profileCircle"></button>*/}
-        <Dropdown />
+        <Dropdown avatar={user.avatar} />
       </div>
     </div>
   );

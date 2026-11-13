@@ -1,6 +1,7 @@
 import ProfileNavbar from "../components/ProfileNavbar";
 import { useSession } from "../Session";
-import Friend from "../components/Friend";
+import "./Profile.css";
+
 
 export default function Profile() {
   const { user, error, signOut } = useSession();
@@ -8,8 +9,10 @@ export default function Profile() {
   return (
     <div>
       <ProfileNavbar />
-      <main className="profileDetails">
+      <main className="profilePage">
         <h1>My profile</h1>
+        <p className="profileSubtitle">A little about you and your trips!</p>
+
         {error && <p role="alert">{error}</p>}
 
         {!user && !error && (
@@ -36,19 +39,17 @@ export default function Profile() {
             <p className="profileBio">{user.bio || "No bio yet."}</p>
 
             <div className="profileInfo">
-              <p>Email: {user.email}</p>
               <p>Account role: {user.role}</p>
-              <p>Following: {user.following.length}</p>
-              <p>Saved itineraries: {user.savedItineraries.length}</p>
               <p>Member since: {new Date(user.createdAt).toLocaleDateString()}</p>
               <p>Last updated: {new Date(user.updatedAt).toLocaleDateString()}</p>
             </div>
 
-            <button className="profileSignOut" onClick={signOut}>
-              Sign out
-            </button>
+            <div className="profileActions">
+              <a href="/feed">Explore Itineraries</a>
+              <button onClick={signOut}>Sign out</button>
+            </div>
+
           </section>
-          <Friend />    
           </>      
         )}
       </main>

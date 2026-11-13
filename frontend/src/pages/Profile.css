@@ -1,0 +1,102 @@
+.profilePage {
+  max-width: 720px;
+  margin: 32px auto;
+  padding: 0 16px;
+}
+
+.profilePage h1 {
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.profileSubtitle {
+  margin: 8px 0 24px;
+}
+
+.profileCard {
+  padding: 24px;
+  border-radius: 8px;
+  background: white;
+  color: #1a1a1a;
+}
+
+.profileHeader {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.profileHeader h2 {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.profileEmail {
+  color: #666666;
+  overflow-wrap: anywhere;
+}
+
+.profileStats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  margin: 24px 0;
+  padding: 16px 0;
+  border-top: 1px solid #eeeeee;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.profileStats strong,
+.profileStats span {
+  display: block;
+}
+
+.profileStats strong {
+  font-size: 24px;
+}
+
+.profileStats span,
+.profileInfo {
+  color: #666666;
+  font-size: 14px;
+}
+
+.profileCard h3 {
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.profileBio {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.profileInfo {
+  margin-top: 24px;
+}
+
+.profileActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.profileActions a,
+.profileActions button {
+  padding: 8px 16px;
+  border: 1px solid #cccccc;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.profileActions a {
+  background: #1a1a1a;
+  border-color: #1a1a1a;
+  color: white;
+}
+
+.profileActions button:hover {
+  background: #eeeeee;
+}
