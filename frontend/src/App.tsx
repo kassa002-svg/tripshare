@@ -7,6 +7,7 @@ import ItineraryPage from "./pages/Itinerary";
 import { SessionProvider, useSession } from "./Session";
 import Profile from "./pages/Profile";
 import LoginUI from "./pages/Login";
+import Signup from "./pages/Signup";
 
 function AppContent() {
   const path = window.location.pathname;
@@ -14,7 +15,7 @@ function AppContent() {
 
   if (loading) return null;
 
-  if (!user && path !== "/login") return <LoginUI />;
+  if (!user && path !== "/login" && path !== "/signup") return <LoginUI />;
 
   if (path === "/")
     return <LoginUI />;
@@ -25,6 +26,7 @@ function AppContent() {
   if (path === "/profile")
     return <Profile />;
   if (path === "/login") return <LoginUI />;
+  if (path === "/signup") return <Signup />;
 
   return <NotFound />;
 }

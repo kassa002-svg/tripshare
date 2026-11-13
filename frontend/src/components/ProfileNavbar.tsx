@@ -8,7 +8,7 @@ export default function ProfileNavbar() {
     return (
       <div className="profileNavBar">
         <h2 className="text-xl font-semibold">TripShare</h2>
-        <a href="/auth/signup" className="hover:underline">
+        <a href="/signup" className="hover:underline">
           Sign up
         </a>
       </div>
