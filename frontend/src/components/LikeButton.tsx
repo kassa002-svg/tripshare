@@ -1,8 +1,9 @@
 import { useSession } from "@/Session";
+import { API_BASE } from "@/apiBase";
 import { Heart } from "lucide-react";
 import { useEffect, useState } from "react";
 
-const itinerariesUrl = "http://localhost:3001/api/itineraries";
+const itinerariesUrl = `${API_BASE}/api/itineraries`;
 
 interface LikeResponse {
   liked: boolean;
