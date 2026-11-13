@@ -75,6 +75,47 @@ router.get("/:id", async (req: Request, res: Response) => {
   res.json(itinerary);
 });
 
+router.patch("/:id/likes", authenticate, async (req: Request, res: Response) => {
+  const userId = req.session.userId!;
+  const itinerary = await getDB()
+    .collection<Itinerary>("itineraries")
+    .findOneAndUpdate(
+      { id: req.params.id },
+      [
+        {
+          $set: {
+            likes: {
+              $cond: [
+                { $in: [userId, { $ifNull: ["$likes", []] }] },
+                {
+                  $setDifference: [
+                    { $ifNull: ["$likes", []] },
+                    [userId],
+                  ],
+                },
+                { $setUnion: [{ $ifNull: ["$likes", []] }, [userId]] },
+              ],
+            },
+            updatedAt: new Date().toISOString(),
+          },
+        },
+        { $set: { likesCount: { $size: "$likes" } } },
+      ],
+      { projection: { _id: 0 }, returnDocument: "after" },
+    );
+
+  if (!itinerary) {
+    res.status(404).json({ error: "Itinerary does not exist" });
+    return;
+  }
+
+  res.json({
+    liked: itinerary.likes.includes(userId),
+    likes: itinerary.likes,
+    likesCount: itinerary.likesCount,
+  });
+});
+
 router.patch("/:id", authenticate, async (req: Request, res: Response) => {
   const old = await getDB()
     .collection<Itinerary>("itineraries")
@@ -120,8 +161,8 @@ router.patch("/:id", authenticate, async (req: Request, res: Response) => {
     title: req.body.title ?? old.title,
     description: req.body.description ?? old.description,
     items,
-    likes: req.body.likes ?? old.likes,
-    likesCount: (req.body.likes ?? old.likes).length,
+    likes: old.likes,
+    likesCount: old.likesCount,
     copiedFrom: req.body.copiedFrom ?? old.copiedFrom,
     updatedAt: now,
   };
@@ -133,7 +174,7 @@ router.patch("/:id", authenticate, async (req: Request, res: Response) => {
   res.json(updatedItinerary);
 });
 
-router.delete("/:id", async (req: Request, res: Response) => {
+router.delete("/:id", authenticate, async (req: Request, res: Response) => {
   const result = await getDB()
     .collection<Itinerary>("itineraries")
     .deleteOne({ id: req.params.id });

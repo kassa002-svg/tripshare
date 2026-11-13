@@ -1,5 +1,5 @@
 import type { Itinerary } from "backend/models/Itinerary";
-import { Heart, MapPin, ArrowUpRight } from "lucide-react";
+import LikeButton from "./LikeButton";
 
 export default function ItineraryCard({
   itinerary,
@@ -13,11 +13,11 @@ export default function ItineraryCard({
   );
 
   return (
-    <a
-      href={`/itineraries/${itinerary.id}`}
-      className="relative w-full cursor-pointer rounded bg-white"
-    >
-      <div className="p-5">
+    <div className="relative w-full rounded bg-white">
+      <a
+        href={`/itineraries/${itinerary.id}`}
+        className="block cursor-pointer rounded p-5"
+      >
         <h3 className="line-clamp-1 text-lg font-bold text-gray-900">
           {itinerary.title}
         </h3>
@@ -56,12 +56,13 @@ export default function ItineraryCard({
             )}
           </div>
         )}
-
-        <div className="absolute right-3 bottom-3 flex flex-row items-center gap-1">
-          <Heart className="h-4 w-4 text-rose-500" />
-          <span className="font-medium text-black">{itinerary.likesCount}</span>
-        </div>
-      </div>
-    </a>
+      </a>
+      <LikeButton
+        itineraryId={itinerary.id}
+        likes={itinerary.likes}
+        likesCount={itinerary.likesCount}
+        className="absolute right-3 bottom-3 z-10"
+      />
+    </div>
   );
 }

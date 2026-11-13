@@ -1,6 +1,7 @@
 import ProfileNavbar from "@/components/ProfileNavbar";
+import LikeButton from "@/components/LikeButton";
 import type { Itinerary, ItineraryItem } from "backend/models/Itinerary";
-import { ArrowLeft, Heart, MapPin } from "lucide-react";
+import { ArrowLeft, MapPin } from "lucide-react";
 import { useEffect, useState } from "react";
 import Comments from "./comments";
 
@@ -26,6 +27,8 @@ function isItinerary(value: unknown): value is Itinerary {
     typeof itinerary.authorId === "string" &&
     typeof itinerary.title === "string" &&
     typeof itinerary.description === "string" &&
+    Array.isArray(itinerary.likes) &&
+    itinerary.likes.every((userId) => typeof userId === "string") &&
     typeof itinerary.likesCount === "number" &&
     Array.isArray(itinerary.items) &&
     itinerary.items.every(isItineraryItem)
@@ -188,10 +191,11 @@ export default function ItineraryPage({ id }: { id: string }) {
                 <MapPin className="h-4 w-4 text-gray-900" />
                 {stops.length} {stops.length === 1 ? "stop" : "stops"}
               </div>
-              <div className="flex items-center gap-2">
-                <Heart className="h-4 w-4 text-rose-500" />
-                {itinerary.likesCount}
-              </div>
+              <LikeButton
+                itineraryId={itinerary.id}
+                likes={itinerary.likes}
+                likesCount={itinerary.likesCount}
+              />
             </div>
           </div>
         </header>
