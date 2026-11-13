@@ -282,6 +282,12 @@ code {
   font-size: xx-large;
 }
 
+.samplePlus:hover {
+  background-color: gray;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
 .loginPage {
   display: flex;
   justify-content: flex-start; 

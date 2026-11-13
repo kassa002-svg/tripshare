@@ -1,12 +1,15 @@
 import { useState } from "react";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import ProfileNavbar from "@/components/ProfileNavbar";
+import Post from "./NewPost";
+import NewPost from "./NewPost";
 
 const googleClientId =
   "193727342680-2rm8o1lojootujg6cvccdfbb3mvnv3le.apps.googleusercontent.com";
 
 export default function OAuthTest() {
   const [oauthResult, setOauthResult] = useState("Not tested yet.");
+  const [newPost, hasClickedNewPost] = useState(false);
 
   const testGoogleOAuth = async (response: any) => {
     try {
@@ -24,6 +27,10 @@ export default function OAuthTest() {
       setOauthResult("Could not connect to backend.");
     }
   };
+
+  if(newPost) {
+    return <NewPost/>
+  }
 
   return (
     <div>
@@ -44,7 +51,9 @@ export default function OAuthTest() {
 
       <div className="profileScreen">
         <div className="center">
-          <div className="samplePlus">+</div>
+          <button onClick={() => hasClickedNewPost(!newPost)} className="samplePlus">
+            +
+          </button>
           <div className="samplePost"></div>
         </div>
         <div className="bigProfilePicture"></div>
