@@ -72,6 +72,27 @@
   overflow-wrap: anywhere;
 }
 
+.profileEditForm {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.profileEditForm input,
+.profileEditForm textarea {
+  padding: 8px;
+  border: 1px solid #cccccc;
+  border-radius: 4px;
+  background: white;
+  color: #1a1a1a;
+}
+
+.profileEditForm textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
 .profileInfo {
   margin-top: 24px;
 }
