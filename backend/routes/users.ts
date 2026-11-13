@@ -3,8 +3,12 @@ import bcrypt from "bcrypt";
 import { ObjectId } from "mongodb";
 import { getDB } from "../db";
 import type { User } from "../models/User";
+import { updateProfile } from "../controllers/userController";
+import { authenticate } from "../middleware/authenticate";
 
 const router = Router();
+
+router.patch("/me", authenticate, updateProfile);
 
 router.post("/register", async (req: Request, res: Response) => {
   if (typeof req.body.password !== "string") {
