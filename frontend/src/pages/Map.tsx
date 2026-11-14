@@ -2,6 +2,7 @@ import { useState } from "react";
 import { APIProvider, InfoWindow, Map, useMapsLibrary, type MapMouseEvent, } from "@vis.gl/react-google-maps";
 import type { CreateItineraryBody, NewItineraryItem } from "backend/models/Itinerary";
 import { API_BASE } from "@/apiBase";
+import ProfileNavbar from "@/components/ProfileNavbar";
 import "./Map.css";
 
 function readApiKey(): string | undefined {
@@ -18,6 +19,7 @@ export default function MapPage() {
   if (!API_KEY) {
     return (
       <main>
+        <ProfileNavbar />
         <h1>Map</h1>
         <p>
           BUN_PUBLIC_GOOGLE_MAPS_API_KEY is missing. Add it to tripshare/.env, then restart.
@@ -27,9 +29,12 @@ export default function MapPage() {
   }
 
   return (
-    <APIProvider apiKey={API_KEY}>
-      <ItineraryBuilder/>
-    </APIProvider>
+    <div className = "map-screen">
+      <ProfileNavbar />
+      <APIProvider apiKey={API_KEY}>
+        <ItineraryBuilder/>
+      </APIProvider>
+    </div>
   );
 }
 

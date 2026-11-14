@@ -7,7 +7,9 @@ export default function ProfileNavbar() {
   if (!user) {
     return (
       <div className="profileNavBar">
-        <h2 className="text-xl font-semibold">TripShare</h2>
+        <a href="/">
+          <h2 className="text-xl font-semibold">TripShare</h2>
+        </a>
         <a href="/signup" className="hover:underline">
           Sign up
         </a>
@@ -17,7 +19,9 @@ export default function ProfileNavbar() {
 
   return (
     <div className="profileNavBar">
-      <h2 className="text-xl font-semibold">TripShare</h2>
+      <a href="/">
+        <h2 className="text-xl font-semibold">TripShare</h2>
+      </a>
       <div className="flex flex-row items-center gap-4">
         <a href="/feed" className="hover:underline">
           Feed
