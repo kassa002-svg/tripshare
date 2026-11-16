@@ -10,6 +10,68 @@ import type {
   Itinerary,
   ItineraryItem,
 } from "../models/Itinerary";
+import type { Comment } from "../models/Comment";
+import type { User } from "../models/User";
+
+router.get("/:id/comments", async (req: Request, res: Response) => {
+  const itineraryId = String(req.params.id);
+  const itinerary = await getDB().collection<Itinerary>("itineraries").findOne({ id: itineraryId }, { projection: { _id: 0, id: 1 } });
+  if (!itinerary) {
+    res.status(404).json({ error: "Itinerary does not exist" });
+    return;
+  }
+
+  const comments = await getDB().collection<Comment>("comments")
+    .find({ itineraryId }, { projection: { _id: 0 } })
+    .sort({ createdAt: 1 })
+    .toArray();
+  const authorIds = [...new Set(comments.map((comment) => comment.authorId))];
+  const authors = await getDB().collection<User>("users")
+    .find({ id: { $in: authorIds } }, { projection: { _id: 0, id: 1, displayName: 1 } })
+    .toArray();
+  const usernamesById = new Map(authors.map((author) => [author.id, author.displayName]));
+
+  res.json(comments.map((comment) => ({
+    ...comment,
+    username: comment.username || usernamesById.get(comment.authorId) || "Former traveler",
+  })));
+});
+
+router.post("/:id/comments", authenticate, async (req: Request, res: Response) => {
+  const itineraryId = String(req.params.id);
+  const text = typeof req.body?.text === "string" ? req.body.text.trim() : "";
+  const itemId = req.body?.itemId == null ? null : req.body.itemId;
+  if (!text || text.length > 2000) {
+    res.status(400).json({ error: "Comment must be between 1 and 2000 characters" });
+    return;
+  }
+  if (itemId !== null && typeof itemId !== "string") {
+    res.status(400).json({ error: "Invalid itinerary stop" });
+    return;
+  }
+
+  const itinerary = await getDB().collection<Itinerary>("itineraries").findOne({ id: itineraryId });
+  if (!itinerary) {
+    res.status(404).json({ error: "Itinerary does not exist" });
+    return;
+  }
+  if (itemId && !itinerary.items.some((item) => item.id === itemId)) {
+    res.status(400).json({ error: "Stop does not belong to this itinerary" });
+    return;
+  }
+
+  const now = new Date().toISOString();
+  const comment: Comment = {
+    id: new ObjectId().toHexString(), itineraryId, itemId,
+    authorId: req.session.userId!, username: "", text, createdAt: now, updatedAt: now,
+  };
+  const author = await getDB().collection<User>("users").findOne(
+    { id: comment.authorId }, { projection: { _id: 0, displayName: 1 } },
+  );
+  comment.username = author?.displayName || "Traveler";
+  await getDB().collection<Comment>("comments").insertOne(comment);
+  res.status(201).json(comment);
+});
 
 router.post("/", authenticate, async (req: Request, res: Response) => {
   const body = req.body as CreateItineraryBody;
