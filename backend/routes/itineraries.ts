@@ -75,6 +75,34 @@ router.get("/:id", async (req: Request, res: Response) => {
   res.json(itinerary);
 });
 
+router.get("/nearby", async (req: Request, res: Response) => {
+  const north = Number(req.query.north);
+  const south = Number(req.query.south);
+  const east = Number(req.query.east);
+  const west = Number(req.query.west);
+
+  const visibleArea = {
+    type: "Polygon",
+    coordinates: [[
+      [west, south],
+      [east, south],
+      [east, north],
+      [west, north],
+      [west, south],
+    ]],
+  };
+
+  const itineraries = await getDB().collection<Itinerary>("itineraries").find(
+      { "items.location": { $geoWithin: { $geometry: visibleArea } } },
+      { projection: { _id: 0 } },
+    )
+    .sort({ createdAt: -1 })
+    .limit(20)
+    .toArray();
+
+  res.json(itineraries);
+});
+
 router.patch("/:id/likes", authenticate, async (req: Request, res: Response) => {
   const userId = req.session.userId!;
   const itinerary = await getDB()
