@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { APIProvider, InfoWindow, Map, useMapsLibrary, type MapMouseEvent, } from "@vis.gl/react-google-maps";
-import type { CreateItineraryBody, NewItineraryItem } from "backend/models/Itinerary";
+import { APIProvider, InfoWindow, Map, useMap, useMapsLibrary, type MapMouseEvent, } from "@vis.gl/react-google-maps";
+import type { CreateItineraryBody, NewItineraryItem, Itinerary } from "backend/models/Itinerary";
 import { API_BASE } from "@/apiBase";
 import ProfileNavbar from "@/components/ProfileNavbar";
 import "./Map.css";
@@ -14,6 +14,7 @@ function readApiKey(): string | undefined {
 }
 
 const API_KEY = readApiKey();
+const MIN_SEARCH_ZOOM = 14;
 
 export default function MapPage() {
   if (!API_KEY) {
@@ -38,13 +39,18 @@ export default function MapPage() {
   );
 }
 
+type Panel = "closed" | "builder" | "search";
+
 function ItineraryBuilder() {
   const placesLib = useMapsLibrary("places");
   const [selected, setSelected] = useState<NewItineraryItem | null>(null);
   const [stops, setStops] = useState<NewItineraryItem[]>([]);
   const [title, setTitle] = useState("");
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [panel, setPanel] = useState<Panel>("closed");
   const [error, setError] = useState("");
+  const [results, setResults] = useState<Itinerary[]>([]);
+  const [searchMessage, setSearchMessage] = useState("");
+  const map = useMap();
 
   async function handleMapClick(event: MapMouseEvent) {
     const { placeId, latLng } = event.detail;
@@ -75,7 +81,7 @@ function ItineraryBuilder() {
     if (!selected) return;
     setStops([...stops, selected]);
     setSelected(null);
-    setSidebarOpen(true);
+    setPanel("builder");
     setError("");
   }
 
@@ -83,7 +89,43 @@ function ItineraryBuilder() {
     setStops([]);
     setTitle("");
     setError("");
-    setSidebarOpen(false);
+    setPanel("closed");
+  }
+
+  async function openSearch() {
+    resetItinerary();
+    setPanel("search");
+    setResults([]);
+
+    const zoom = map?.getZoom();
+    const bounds = map?.getBounds()?.toJSON();
+    if (zoom < MIN_SEARCH_ZOOM) {
+      setSearchMessage("Zoom in more to find itineraries in the area.");
+      return;
+    }
+
+    const params = new URLSearchParams({
+      north: String(bounds.north),
+      south: String(bounds.south),
+      east: String(bounds.east),
+      west: String(bounds.west),
+    });
+
+    try{
+      const res = await fetch(`${API_BASE}/api/itineraries/nearby?${params}`);
+      const data = await res.json();
+
+      if (!res.ok) {
+        setSearchMessage(data.error ?? "Could not search this area.");
+        return;
+      }
+
+      const found = data as Itinerary[];
+      setResults(found);
+      setSearchMessage(found.length === 0 ? "No itineraries in this area yet." : "");
+    } catch {
+      setSearchMessage("Could not reach the backend.");
+    }
   }
 
   async function saveItinerary() {
@@ -129,15 +171,24 @@ function ItineraryBuilder() {
         >
           {selected && (<PlacePopup place={selected} onAdd={addStop} onClose={() => setSelected(null)} />)}
         </Map>
+
+        <button className="btn-primary search-btn" onClick={openSearch}>
+          Search Nearby
+        </button>
       </div>
 
-      {sidebarOpen && (<ItinerarySidebar title={title} stops={stops} error={error}
+      {panel === "builder" && (<ItinerarySidebar title={title} stops={stops} error={error}
           onTitleChange={(newTitle) => {
             setTitle(newTitle);
             setError("");
           }}
           onSave={saveItinerary}
           onClose={resetItinerary}
+        />
+      )}
+
+      {panel === "search" && (<SearchSidebar results={results} message={searchMessage}
+          onClose={() => setPanel("closed")}
         />
       )}
     </div>
@@ -202,5 +253,49 @@ function ItinerarySidebar({ title, stops, error, onTitleChange, onSave, onClose 
 
       {error && <p className="sidebar-error">{error}</p>}
     </aside>
+  );
+}
+
+type SearchSidebarProps = {
+  results: Itinerary[];
+  message: string;
+  onClose: () => void;
+};
+
+function SearchSidebar({ results, message, onClose }: SearchSidebarProps) {
+  return (
+    <aside className="sidebar">
+      <div className="sidebar-header">
+        <h2 className="sidebar-heading">Itineraries in this area</h2>
+        <button className="btn-close" onClick={onClose}>
+          Close
+        </button>
+      </div>
+
+      {message && <p className="sidebar-message">{message}</p>}
+
+      <div className="search-list">
+        {results.map((itinerary) => (
+          <SearchCard key={itinerary.id} itinerary={itinerary} />
+        ))}
+      </div>
+    </aside>
+  );
+}
+
+type SearchCardProps = {
+  itinerary: Itinerary;
+};
+
+function SearchCard({ itinerary }: SearchCardProps) {
+  return (
+    <div className="search-card">
+      <p className="search-card-title">{itinerary.title}</p>
+      <ol className="sidebar-stops">
+        {itinerary.items.map((item) => (
+          <li key={item.id}>{item.name}</li>
+        ))}
+      </ol>
+    </div>
   );
 }

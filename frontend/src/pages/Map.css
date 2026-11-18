@@ -100,3 +100,35 @@
   width: 100%;
   padding: 10px;
 }
+
+.search-btn {
+  position: absolute;
+  left: 12px;
+  bottom: 36px;
+  z-index: 1;
+  padding: 10px 16px;
+  font-weight: bold;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.search-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.search-card {
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+}
+
+.search-card-title {
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.sidebar-message {
+  color: #6b7280;
+  font-size: 0.875rem;
+}

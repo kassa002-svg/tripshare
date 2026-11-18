@@ -62,19 +62,6 @@ router.get("/", async (_req: Request, res: Response) => {
   res.json(itineraries);
 });
 
-router.get("/:id", async (req: Request, res: Response) => {
-  const itinerary = await getDB()
-    .collection<Itinerary>("itineraries")
-    .findOne({ id: req.params.id });
-
-  if (!itinerary) {
-    res.status(404).json({ error: "Itinerary does not exist" });
-    return;
-  }
-
-  res.json(itinerary);
-});
-
 router.get("/nearby", async (req: Request, res: Response) => {
   const north = Number(req.query.north);
   const south = Number(req.query.south);
@@ -102,6 +89,20 @@ router.get("/nearby", async (req: Request, res: Response) => {
 
   res.json(itineraries);
 });
+
+router.get("/:id", async (req: Request, res: Response) => {
+  const itinerary = await getDB()
+    .collection<Itinerary>("itineraries")
+    .findOne({ id: req.params.id });
+
+  if (!itinerary) {
+    res.status(404).json({ error: "Itinerary does not exist" });
+    return;
+  }
+
+  res.json(itinerary);
+});
+
 
 router.patch("/:id/likes", authenticate, async (req: Request, res: Response) => {
   const userId = req.session.userId!;
