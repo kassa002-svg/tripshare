@@ -39,7 +39,7 @@ export default function MapPage() {
   );
 }
 
-type Panel = "closed" | "builder" | "search";
+type Panel = "closed" | "builder" | "search" | "owned";
 
 function ItineraryBuilder() {
   const placesLib = useMapsLibrary("places");
@@ -128,6 +128,35 @@ function ItineraryBuilder() {
     }
   }
 
+  async function openOwned(){
+    resetItinerary();
+    setPanel("owned");
+    setResults([]);
+    setSearchMessage("Loading");
+
+    try {
+      const res = await fetch(`${API_BASE}/api/itineraries/owned`, {
+        credentials: "include",
+      });
+      const data = await res.json();
+
+      if (res.status === 401) {
+        setSearchMessage("Log in to see your itineraries.");
+        return;
+      }
+      if (!res.ok) {
+        setSearchMessage(data.error ?? "Could not load your itineraries.");
+        return;
+      }
+
+      const found = data as Itinerary[];
+      setResults(found);
+      setSearchMessage(found.length === 0 ? "You have no saved itineraries." : "");
+    } catch {
+      setSearchMessage("Could not reach the backend.");
+    }
+  }
+
   async function saveItinerary() {
     if (title.trim() === "") {
       setError("Please give your itinerary a title.");
@@ -172,9 +201,14 @@ function ItineraryBuilder() {
           {selected && (<PlacePopup place={selected} onAdd={addStop} onClose={() => setSelected(null)} />)}
         </Map>
 
-        <button className="btn-primary search-btn" onClick={openSearch}>
-          Search Nearby
-        </button>
+        <div className="map-buttons">
+          <button className="btn-primary map-btn" onClick={openOwned}>
+            My Itineraries
+          </button>
+          <button className="btn-primary map-btn" onClick={openSearch}>
+            Search Nearby
+          </button>
+        </div>
       </div>
 
       {panel === "builder" && (<ItinerarySidebar title={title} stops={stops} error={error}
@@ -187,7 +221,16 @@ function ItineraryBuilder() {
         />
       )}
 
-      {panel === "search" && (<SearchSidebar results={results} message={searchMessage}
+      {panel === "search" && (<SearchSidebar heading = "Itineraries in this area"
+          results={results}
+          message={searchMessage}
+          onClose={() => setPanel("closed")}
+        />
+      )}
+
+      {panel === "owned" && (<SearchSidebar heading="My itineraries"
+          results={results} 
+          message={searchMessage}
           onClose={() => setPanel("closed")}
         />
       )}
@@ -257,16 +300,17 @@ function ItinerarySidebar({ title, stops, error, onTitleChange, onSave, onClose 
 }
 
 type SearchSidebarProps = {
+  heading: string;
   results: Itinerary[];
   message: string;
   onClose: () => void;
 };
 
-function SearchSidebar({ results, message, onClose }: SearchSidebarProps) {
+function SearchSidebar({ results, message, onClose, heading }: SearchSidebarProps) {
   return (
     <aside className="sidebar">
       <div className="sidebar-header">
-        <h2 className="sidebar-heading">Itineraries in this area</h2>
+        <h2 className="sidebar-heading">{heading}</h2>
         <button className="btn-close" onClick={onClose}>
           Close
         </button>
