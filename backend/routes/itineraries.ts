@@ -90,6 +90,15 @@ router.get("/nearby", async (req: Request, res: Response) => {
   res.json(itineraries);
 });
 
+router.get("/owned", authenticate, async (req: Request, res: Response) => {
+  const itineraries = await getDB().collection<Itinerary>("itineraries").find(
+    { authorId: req.session.userId! }, { projection: { _id: 0 } })
+    .sort({ createdAt: -1 })
+    .toArray();
+
+  res.json(itineraries);
+});
+
 router.get("/:id", async (req: Request, res: Response) => {
   const itinerary = await getDB()
     .collection<Itinerary>("itineraries")
