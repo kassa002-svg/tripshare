@@ -1,6 +1,7 @@
 import ItineraryCard from "@/components/IteneraryCard";
 import ProfileNavbar from "@/components/ProfileNavbar";
 import type { Itinerary } from "backend/models/Itinerary";
+import { API_BASE } from "@/apiBase";
 import { useEffect, useState } from "react";
 
 function isItinerary(value: unknown): value is Itinerary {
@@ -32,7 +33,7 @@ export default function FeedPage() {
       setError("");
 
       try {
-        const response = await fetch("http://localhost:3001/api/itineraries", {
+        const response = await fetch(`${API_BASE}/api/itineraries`, {
           credentials: "include",
           signal: controller.signal,
         });

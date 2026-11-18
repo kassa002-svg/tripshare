@@ -1,13 +1,16 @@
 import Dropdown from "./DropdownLogin.tsx";
+import {useSession} from "../Session.tsx";
 
 export default function ProfileNavbar() {
-  const loggedIn = true;
+  const { user } = useSession();
 
-  if (!loggedIn) {
+  if (!user) {
     return (
       <div className="profileNavBar">
-        <h2 className="text-xl font-semibold">TripShare</h2>
-        <a href="/auth/signup" className="hover:underline">
+        <a href="/">
+          <h2 className="text-xl font-semibold">TripShare</h2>
+        </a>
+        <a href="/signup" className="hover:underline">
           Sign up
         </a>
       </div>
@@ -16,8 +19,13 @@ export default function ProfileNavbar() {
 
   return (
     <div className="profileNavBar">
-      <h2 className="text-xl font-semibold">TripShare</h2>
+      <a href="/">
+        <h2 className="text-xl font-semibold">TripShare</h2>
+      </a>
       <div className="flex flex-row items-center gap-4">
+        <a href="/map" className="hover:underline">
+          Map
+        </a>
         <a href="/feed" className="hover:underline">
           Feed
         </a>
@@ -25,7 +33,7 @@ export default function ProfileNavbar() {
           Friends
         </a>
         {/*<button type="button" className="profileCircle"></button>*/}
-        <Dropdown />
+        <Dropdown avatar={user.avatar} />
       </div>
     </div>
   );

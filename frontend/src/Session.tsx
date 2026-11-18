@@ -1,8 +1,9 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import type { User } from "../../backend/models/User";
+import { API_BASE } from "@/apiBase";
 
 type SessionUser = Omit<User, "passwordHash" | "googleId">;
-const authUrl = "http://localhost:3001/api/auth";
+const authUrl = `${API_BASE}/api/auth`;
 
 const SessionContext = createContext({
   user: null as SessionUser | null,

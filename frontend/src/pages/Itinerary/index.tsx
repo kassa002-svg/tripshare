@@ -1,5 +1,6 @@
 import ProfileNavbar from "@/components/ProfileNavbar";
 import LikeButton from "@/components/LikeButton";
+import { API_BASE } from "@/apiBase";
 import type { Itinerary, ItineraryItem } from "backend/models/Itinerary";
 import { ArrowLeft, MapPin } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -53,7 +54,7 @@ export default function ItineraryPage({ id }: { id: string }) {
 
       try {
         const response = await fetch(
-          `http://localhost:3001/api/itineraries/${encodeURIComponent(id)}`,
+          `${API_BASE}/api/itineraries/${encodeURIComponent(id)}`,
           { credentials: "include", signal: controller.signal },
         );
         const json: unknown = await response.json();

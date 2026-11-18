@@ -1,4 +1,5 @@
 import ProfileNavbar from "@/components/ProfileNavbar";
+import { API_BASE } from "@/apiBase";
 import {
   ArrowLeft,
   Image,
@@ -63,7 +64,7 @@ export default function NewPost() {
     setError("");
 
     try {
-      const response = await fetch("http://localhost:3001/api/itineraries", {
+      const response = await fetch(`${API_BASE}/api/itineraries`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
