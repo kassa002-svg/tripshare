@@ -4,6 +4,7 @@ export interface Comment {
   itineraryId: string;
   itemId: string | null; // null = comment on the itinerary, set = comment on specific item
   authorId: string;
+  username: string;
   text: string;
   createdAt: string;
   updatedAt: string;

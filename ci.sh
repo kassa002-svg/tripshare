@@ -1,17 +1,13 @@
 #!/bin/bash
 
 # this script runs in a screen, so run it forever
-while true; do
-    # check for git updates
-    git fetch origin main
+# check for git updates
+git fetch origin main
 
-    if [[ "$(git rev-parse main)" != "$(git rev-parse origin/main)" ]]; then
-        echo "main updated, rebuilding"
+if [[ "$(git rev-parse main)" != "$(git rev-parse origin/main)" ]]; then
+    echo "main updated, rebuilding"
 
-        docker compose up --build -d
+    docker compose up --build -d
 
-        echo "build complete"
-    fi
-
-    sleep 60
-done
+    echo "build complete"
+fi

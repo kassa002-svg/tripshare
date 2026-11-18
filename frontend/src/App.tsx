@@ -27,6 +27,7 @@ function AppContent() {
     return <Profile />;
   if (path === "/login") return <LoginUI />;
   if (path === "/signup") return <Signup />;
+  if (path.startsWith("/itineraries/")) return <ItineraryPage id={path.split("/")?.[2] || ""} />;
 
   return <NotFound />;
 }
