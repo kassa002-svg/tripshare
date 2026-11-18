@@ -1,22 +1,29 @@
 import { Send } from "lucide-react";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { type Comment } from "backend/models/Comment";
+import { API_BASE } from "@/apiBase";
+import { useSession } from "@/Session";
 
 interface CommentBoxProps {
-  onSubmit: (text: string) => void;
+  onSubmit: (text: string) => Promise<void>;
+  disabled?: boolean;
 }
 
-export function CommentBox({ onSubmit }: CommentBoxProps) {
+export function CommentBox({ onSubmit, disabled = false }: CommentBoxProps) {
   const [text, setText] = useState("");
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const comment = text.trim();
     if (!comment) return;
 
-    onSubmit(comment);
-    setText("");
+    try {
+      await onSubmit(comment);
+      setText("");
+    } catch {
+
+    }
   };
 
   return (
@@ -28,12 +35,13 @@ export function CommentBox({ onSubmit }: CommentBoxProps) {
         id="new-comment"
         value={text}
         onChange={(event) => setText(event.target.value)}
+        disabled={disabled}
         className="min-h-24 w-full resize-y rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-900 outline-none"
       />
       <div className="mt-3 flex justify-end">
         <button
           type="submit"
-          disabled={!text.trim()}
+          disabled={disabled || !text.trim()}
           className="inline-flex items-center gap-2 rounded-lg bg-gray-950 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-40"
         >
           <Send className="h-4 w-4" />
@@ -44,7 +52,9 @@ export function CommentBox({ onSubmit }: CommentBoxProps) {
   );
 }
 
-export function CommentView({ comment }: { comment: Comment }) {
+type DisplayComment = Comment & { username?: string };
+
+export function CommentView({ comment }: { comment: DisplayComment }) {
   const createdAt = new Intl.DateTimeFormat("en", {
     month: "short",
     day: "numeric",
@@ -58,7 +68,7 @@ export function CommentView({ comment }: { comment: Comment }) {
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-baseline gap-x-2">
           <p className="text-sm font-semibold text-gray-900">
-            {comment.authorId}
+            {comment.username || comment.authorId}
           </p>
           <time className="text-xs text-gray-400" dateTime={comment.createdAt}>
             {createdAt}
@@ -70,49 +80,61 @@ export function CommentView({ comment }: { comment: Comment }) {
   );
 }
 
-const starterComments: Omit<Comment, "itineraryId">[] = [
-  {
-    id: "testid1",
-    authorId: "grimace shake snake",
-    text: "holy stromboli",
-    createdAt: "2026-11-03T18:20:00.000Z",
-    updatedAt: "2026-11-04T09:20:00.000Z",
-    itemId: "1",
-  },
-  {
-    id: "testid2",
-    authorId: "helloworld",
-    text: "hey mom im in comments",
-    createdAt: "2026-11-04T09:15:00.000Z",
-    updatedAt: "2026-11-04T09:15:00.000Z",
-    itemId: "1",
-  },
-];
-
 export default function Comments({ itineraryId }: { itineraryId: string }) {
-  const [comments, setComments] = useState<Comment[]>(() =>
-    starterComments.map((comment) => ({ ...comment, itineraryId })),
-  );
+  const { user } = useSession();
+  const [comments, setComments] = useState<DisplayComment[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
-  const addComment = (text: string) => {
-    const now = new Date().toISOString();
+  useEffect(() => {
+    const controller = new AbortController();
+    setLoading(true);
+    setError("");
+    fetch(`${API_BASE}/api/itineraries/${encodeURIComponent(itineraryId)}/comments`, {
+      credentials: "include",
+      signal: controller.signal,
+    })
+      .then(async (response) => {
+        const body: unknown = await response.json();
+        if (!response.ok) throw new Error("Could not load comments");
+        if (!Array.isArray(body)) throw new Error("Invalid comments response");
+        setComments(body as DisplayComment[]);
+      })
+      .catch((requestError) => {
+        if (requestError instanceof DOMException && requestError.name === "AbortError") return;
+        setError(requestError instanceof Error ? requestError.message : "Could not load comments");
+      })
+      .finally(() => { if (!controller.signal.aborted) setLoading(false); });
+    return () => controller.abort();
+  }, [itineraryId]);
 
-    setComments((currentComments) => [
-      ...currentComments,
-      {
-        id: crypto.randomUUID(),
-        itineraryId,
-        itemId: null,
-        authorId: "test-user",
-        text,
-        createdAt: now,
-        updatedAt: now,
-      },
-    ]);
+  const addComment = async (text: string) => {
+    setSubmitting(true);
+    setError("");
+    try {
+      const response = await fetch(`${API_BASE}/api/itineraries/${encodeURIComponent(itineraryId)}/comments`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text }),
+      });
+      const body: unknown = await response.json();
+      if (!response.ok) {
+        const message = body && typeof body === "object" && "error" in body && typeof body.error === "string" ? body.error : "Could not post comment";
+        throw new Error(message);
+      }
+      setComments((current) => [...current, body as DisplayComment]);
+    } catch (requestError) {
+      setError(requestError instanceof Error ? requestError.message : "Could not post comment");
+      throw requestError;
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
-    <section className="rounded-md border border-gray-200 bg-white p-5 shadow-sm sm:p-6">
+    <section id="comments" className="rounded-md border border-gray-200 bg-white p-5 shadow-sm sm:p-6">
       <div>
         <h2 className="text-lg font-semibold text-gray-950">Comments</h2>
         <p className="mt-1 text-sm text-gray-500">
@@ -120,10 +142,12 @@ export default function Comments({ itineraryId }: { itineraryId: string }) {
         </p>
       </div>
 
-      <CommentBox onSubmit={addComment} />
+      {user ? <CommentBox onSubmit={addComment} disabled={submitting} /> : <p className="mt-5 text-sm text-gray-500">Sign in to leave a comment.</p>}
+      {error && <p role="alert" className="mt-3 text-sm text-red-700">{error}</p>}
+      {submitting && <p className="mt-3 text-sm text-gray-500">Posting...</p>}
 
       <div className="mt-6">
-        {comments.length > 0 ? (
+        {loading ? <p className="py-6 text-center text-sm text-gray-500">Loading...</p> : comments.length > 0 ? (
           comments.map((comment) => (
             <CommentView key={comment.id} comment={comment} />
           ))
