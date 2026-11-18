@@ -13,6 +13,18 @@ import type {
 import type { Comment } from "../models/Comment";
 import type { User } from "../models/User";
 
+router.get("/:id/comments/count", async (req: Request, res: Response) => {
+  const itineraryId = String(req.params.id);
+  const itinerary = await getDB().collection<Itinerary>("itineraries")
+    .findOne({ id: itineraryId }, { projection: { _id: 0, id: 1 } });
+  if (!itinerary) {
+    res.status(404).json({ error: "Itinerary does not exist" });
+    return;
+  }
+  const count = await getDB().collection<Comment>("comments").countDocuments({ itineraryId });
+  res.json({ count });
+});
+
 router.get("/:id/comments", async (req: Request, res: Response) => {
   const itineraryId = String(req.params.id);
   const itinerary = await getDB().collection<Itinerary>("itineraries").findOne({ id: itineraryId }, { projection: { _id: 0, id: 1 } });

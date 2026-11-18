@@ -1,5 +1,8 @@
 import type { Itinerary } from "backend/models/Itinerary";
 import LikeButton from "./LikeButton";
+import { MessageCircle } from "lucide-react";
+import { useEffect, useState } from "react";
+import { API_BASE } from "@/apiBase";
 
 export default function ItineraryCard({
   itinerary,
@@ -8,6 +11,23 @@ export default function ItineraryCard({
   itinerary: Itinerary;
   onClick?: (id: string) => void;
 }) {
+  const [commentCount, setCommentCount] = useState(0);
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch(`${API_BASE}/api/itineraries/${encodeURIComponent(itinerary.id)}/comments/count`, {
+      credentials: "include",
+      signal: controller.signal,
+    })
+      .then((response) => response.ok ? response.json() : null)
+      .then((result: unknown) => {
+        if (result && typeof result === "object" && "count" in result && typeof result.count === "number") {
+          setCommentCount(result.count);
+        }
+      })
+      .catch(() => {});
+    return () => controller.abort();
+  }, [itinerary.id]);
+
   const [firstItem, secondItem] = [...itinerary.items].sort(
     (a, b) => a.order - b.order,
   );
@@ -63,6 +83,14 @@ export default function ItineraryCard({
         likesCount={itinerary.likesCount}
         className="absolute right-3 bottom-3 z-10"
       />
+      <a
+        href={`/itineraries/${itinerary.id}#comments`}
+        aria-label={`${commentCount} comments`}
+        className="absolute right-16 bottom-3 z-10 inline-flex items-center gap-1 rounded-full bg-white/90 px-2 py-1 text-sm text-gray-600 hover:text-gray-950"
+      >
+        <MessageCircle className="h-4 w-4" />
+        <span>{commentCount}</span>
+      </a>
     </div>
   );
 }
