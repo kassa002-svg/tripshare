@@ -125,7 +125,7 @@ export default function Profile() {
             <div className="profileActions">
               <a href="/feed">Explore Itineraries</a>
               <a onClick={() => setEditing(true)}>Edit Profile</a>
-              <button onClick={signOut}>Sign out</button>
+              <button onClick={signOut} className="signOut">Sign out</button>
             </div>
 
           </section>

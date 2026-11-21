@@ -75,8 +75,8 @@ export default function Login() {
             onChange={(event) => setPassword(event.target.value)}
             required
           />
-          <button type="submit" className="loginButton">Log in</button>
-          <a href="/signup">Create account</a>
+          <button type="submit" className="loginButton">Log In</button>
+          <a href="/signup" className="createAccount">Create account</a>
           {message && <p>{message}</p>}
         </form>
         <div className="googleLoginButton">

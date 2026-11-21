@@ -116,6 +116,7 @@
   background: #1a1a1a;
   border-color: #1a1a1a;
   color: white;
+  transition: background-color 0.25s ease;
 }
 
 .profileActions button:hover {
