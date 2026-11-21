@@ -73,7 +73,7 @@ export default function Signup() {
           />
 
           <button type="submit" className="loginButton">Sign up</button>
-          <a href="/login">Already have an account?</a>
+          <a href="/login" className="createAccount">Already have an account?</a>
           {message && <p>{message}</p>}
         </form>
       </main>
