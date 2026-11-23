@@ -34,7 +34,8 @@ router.post("/register", async (req: Request, res: Response) => {
   };
 
   await createUser(user);
-  res.status(201).json(user);
+  const { passwordHash: _passwordHash, ...publicUser } = user;
+  res.status(201).json(publicUser);
 });
 
 router.get("/:id", async (req: Request, res: Response) => {

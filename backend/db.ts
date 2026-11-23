@@ -47,6 +47,11 @@ export function getDB(): MongoDatabase {
   return db;
 }
 
+/** Replace the active database for isolated integration tests. */
+export function setDBForTests(database: MongoDatabase | null): void {
+  db = database;
+}
+
 export async function ensureItineraryIndexes(): Promise<void> {
   await runDB("ensure itinerary indexes", async (database) => {
     await database.collection<Itinerary>("itineraries").createIndexes([
