@@ -5,6 +5,7 @@ import authRouter from "./routes/auth";
 import { connectDB } from "./db";
 import { ensureItineraryIndexes } from "./setupItineraries";
 import itinerariesRouter from "./routes/itineraries";
+import { DatabaseError } from "./db";
 
 const app: Express = express();
 const port = 3001;
@@ -51,6 +52,16 @@ app.get("/", (req: Request, res: Response) => {
 
 app.use("/api/users", usersRouter);
 app.use("/api/itineraries", itinerariesRouter);
+
+app.use((error: unknown, _req: Request, res: Response, _next: (error?: unknown) => void) => {
+  if (error instanceof DatabaseError) {
+    console.error(error.message, error.cause);
+    res.status(500).json({ error: "A database operation failed" });
+    return;
+  }
+  console.error("Request failed:", error);
+  res.status(500).json({ error: "Internal server error" });
+});
 
 try {
   await connectDB();

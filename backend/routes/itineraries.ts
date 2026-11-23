@@ -1,6 +1,6 @@
 import { Router, type Request, type Response } from "express";
 import { ObjectId } from "mongodb";
-import { getDB } from "../db";
+import { countComments, createComment, createItinerary, deleteItinerary, getCommentAuthorNames, getItineraryById, hasItinerary, listComments, listItineraries, listNearbyItineraries, listUserItineraries, toggleItineraryLike, setItinerary } from "../db";
 const router = Router();
 
 import { authenticate } from "../middleware/authenticate";
@@ -11,36 +11,27 @@ import type {
   ItineraryItem,
 } from "../models/Itinerary";
 import type { Comment } from "../models/Comment";
-import type { User } from "../models/User";
 
 router.get("/:id/comments/count", async (req: Request, res: Response) => {
   const itineraryId = String(req.params.id);
-  const itinerary = await getDB().collection<Itinerary>("itineraries")
-    .findOne({ id: itineraryId }, { projection: { _id: 0, id: 1 } });
-  if (!itinerary) {
+  if (!(await hasItinerary(itineraryId))) {
     res.status(404).json({ error: "Itinerary does not exist" });
     return;
   }
-  const count = await getDB().collection<Comment>("comments").countDocuments({ itineraryId });
+  const count = await countComments(itineraryId);
   res.json({ count });
 });
 
 router.get("/:id/comments", async (req: Request, res: Response) => {
   const itineraryId = String(req.params.id);
-  const itinerary = await getDB().collection<Itinerary>("itineraries").findOne({ id: itineraryId }, { projection: { _id: 0, id: 1 } });
-  if (!itinerary) {
+  if (!(await hasItinerary(itineraryId))) {
     res.status(404).json({ error: "Itinerary does not exist" });
     return;
   }
 
-  const comments = await getDB().collection<Comment>("comments")
-    .find({ itineraryId }, { projection: { _id: 0 } })
-    .sort({ createdAt: 1 })
-    .toArray();
+  const comments = await listComments(itineraryId);
   const authorIds = [...new Set(comments.map((comment) => comment.authorId))];
-  const authors = await getDB().collection<User>("users")
-    .find({ id: { $in: authorIds } }, { projection: { _id: 0, id: 1, displayName: 1 } })
-    .toArray();
+  const authors = await getCommentAuthorNames(authorIds);
   const usernamesById = new Map(authors.map((author) => [author.id, author.displayName]));
 
   res.json(comments.map((comment) => ({
@@ -62,7 +53,7 @@ router.post("/:id/comments", authenticate, async (req: Request, res: Response) =
     return;
   }
 
-  const itinerary = await getDB().collection<Itinerary>("itineraries").findOne({ id: itineraryId });
+  const itinerary = await getItineraryById(itineraryId);
   if (!itinerary) {
     res.status(404).json({ error: "Itinerary does not exist" });
     return;
@@ -77,11 +68,9 @@ router.post("/:id/comments", authenticate, async (req: Request, res: Response) =
     id: new ObjectId().toHexString(), itineraryId, itemId,
     authorId: req.session.userId!, username: "", text, createdAt: now, updatedAt: now,
   };
-  const author = await getDB().collection<User>("users").findOne(
-    { id: comment.authorId }, { projection: { _id: 0, displayName: 1 } },
-  );
-  comment.username = author?.displayName || "Traveler";
-  await getDB().collection<Comment>("comments").insertOne(comment);
+  const authors = await getCommentAuthorNames([comment.authorId]);
+  comment.username = authors[0]?.displayName || "Traveler";
+  await createComment(comment);
   res.status(201).json(comment);
 });
 
@@ -122,16 +111,13 @@ router.post("/", authenticate, async (req: Request, res: Response) => {
     updatedAt: now,
   };
 
-  await getDB().collection<Itinerary>("itineraries").insertOne(itinerary);
+  await createItinerary(itinerary);
 
   res.status(201).json({ message: "Itinerary saved", id: itineraryId });
 });
 
 router.get("/", async (_req: Request, res: Response) => {
-  const itineraries = await getDB()
-    .collection<Itinerary>("itineraries")
-    .find({})
-    .toArray();
+  const itineraries = await listItineraries();
 
   res.json(itineraries);
 });
@@ -142,41 +128,19 @@ router.get("/nearby", async (req: Request, res: Response) => {
   const east = Number(req.query.east);
   const west = Number(req.query.west);
 
-  const visibleArea = {
-    type: "Polygon",
-    coordinates: [[
-      [west, south],
-      [east, south],
-      [east, north],
-      [west, north],
-      [west, south],
-    ]],
-  };
-
-  const itineraries = await getDB().collection<Itinerary>("itineraries").find(
-      { "items.location": { $geoWithin: { $geometry: visibleArea } } },
-      { projection: { _id: 0 } },
-    )
-    .sort({ createdAt: -1 })
-    .limit(20)
-    .toArray();
+  const itineraries = await listNearbyItineraries(north, south, east, west);
 
   res.json(itineraries);
 });
 
 router.get("/owned", authenticate, async (req: Request, res: Response) => {
-  const itineraries = await getDB().collection<Itinerary>("itineraries").find(
-    { authorId: req.session.userId! }, { projection: { _id: 0 } })
-    .sort({ createdAt: -1 })
-    .toArray();
+  const itineraries = await listUserItineraries(req.session.userId!);
 
   res.json(itineraries);
 });
 
 router.get("/:id", async (req: Request, res: Response) => {
-  const itinerary = await getDB()
-    .collection<Itinerary>("itineraries")
-    .findOne({ id: req.params.id });
+  const itinerary = await getItineraryById(String(req.params.id));
 
   if (!itinerary) {
     res.status(404).json({ error: "Itinerary does not exist" });
@@ -189,32 +153,7 @@ router.get("/:id", async (req: Request, res: Response) => {
 
 router.patch("/:id/likes", authenticate, async (req: Request, res: Response) => {
   const userId = req.session.userId!;
-  const itinerary = await getDB()
-    .collection<Itinerary>("itineraries")
-    .findOneAndUpdate(
-      { id: req.params.id },
-      [
-        {
-          $set: {
-            likes: {
-              $cond: [
-                { $in: [userId, { $ifNull: ["$likes", []] }] },
-                {
-                  $setDifference: [
-                    { $ifNull: ["$likes", []] },
-                    [userId],
-                  ],
-                },
-                { $setUnion: [{ $ifNull: ["$likes", []] }, [userId]] },
-              ],
-            },
-            updatedAt: new Date().toISOString(),
-          },
-        },
-        { $set: { likesCount: { $size: "$likes" } } },
-      ],
-      { projection: { _id: 0 }, returnDocument: "after" },
-    );
+  const itinerary = await toggleItineraryLike(String(req.params.id), userId);
 
   if (!itinerary) {
     res.status(404).json({ error: "Itinerary does not exist" });
@@ -229,9 +168,8 @@ router.patch("/:id/likes", authenticate, async (req: Request, res: Response) => 
 });
 
 router.patch("/:id", authenticate, async (req: Request, res: Response) => {
-  const old = await getDB()
-    .collection<Itinerary>("itineraries")
-    .findOne({ id: req.params.id });
+  const itineraryId = String(req.params.id);
+  const old = await getItineraryById(itineraryId);
 
   if (!old) {
     res.status(404).json({ error: "Itinerary does not exist" });
@@ -239,7 +177,7 @@ router.patch("/:id", authenticate, async (req: Request, res: Response) => {
   }
 
   const now = new Date().toISOString();
-  const { _id, ...existing } = old;
+  const existing = old;
   const items: ItineraryItem[] = (req.body.items ?? old.items).map(
     (item: Partial<ItineraryItem>, index: number) => {
       const oldItem =
@@ -248,7 +186,7 @@ router.patch("/:id", authenticate, async (req: Request, res: Response) => {
 
       return {
         id: item.id ?? new ObjectId().toHexString(),
-        itineraryId: req.params.id,
+        itineraryId,
         name: item.name ?? oldItem?.name ?? "",
         description: item.description ?? oldItem?.description ?? "",
         photoUrl: item.photoUrl ?? oldItem?.photoUrl ?? "",
@@ -279,19 +217,15 @@ router.patch("/:id", authenticate, async (req: Request, res: Response) => {
     updatedAt: now,
   };
 
-  await getDB()
-    .collection<Itinerary>("itineraries")
-    .replaceOne({ id: req.params.id }, updatedItinerary);
+  await setItinerary(itineraryId, updatedItinerary);
 
   res.json(updatedItinerary);
 });
 
 router.delete("/:id", authenticate, async (req: Request, res: Response) => {
-  const result = await getDB()
-    .collection<Itinerary>("itineraries")
-    .deleteOne({ id: req.params.id });
+  const deleted = await deleteItinerary(String(req.params.id));
 
-  if (result.deletedCount === 0) {
+  if (!deleted) {
     res.status(404).json({ error: "Itinerary does not exist" });
     return;
   }

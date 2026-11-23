@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import { OAuth2Client } from "google-auth-library";
 import dotenv from "dotenv";
 import { ObjectId } from "mongodb";
-import { getDB } from "../db";
+import { createUser, DatabaseError, getUserByEmail, getUserByGoogleId } from "../db";
 import type { User } from "../models/User";
 
 dotenv.config();
@@ -19,7 +19,7 @@ export async function login(req: Request, res: Response): Promise<void> {
     return;
   }
 
-  const user = await getDB().collection<User>("users").findOne({ email });
+  const user = await getUserByEmail(email);
 
   if (!user?.passwordHash || !(await bcrypt.compare(password, user.passwordHash))) {
     res.status(401).json({ error: "Invalid information" });
@@ -32,7 +32,7 @@ export async function login(req: Request, res: Response): Promise<void> {
   res.json({ message: "Login successful", user: userWithoutPassword });
 }
 
-export async function googleAuth(req: Request, res: Response): Promise<void> {
+export async function googleAuth(req: Request, res: Response, next: (error?: unknown) => void): Promise<void> {
   const token = req.body.credential;
 
   if (!token) {
@@ -52,12 +52,10 @@ export async function googleAuth(req: Request, res: Response): Promise<void> {
       throw new Error("Invalid Google account");
     }
 
-    const users = getDB().collection<User>("users");
-
-    let user: User | null = await users.findOne({ googleId: profile.sub });
+    let user: User | null = await getUserByGoogleId(profile.sub);
 
     if (user === null) {
-      const existingEmail = await users.findOne({ email: profile.email });
+      const existingEmail = await getUserByEmail(profile.email);
 
       if (existingEmail !== null) {
         res.status(409).json({ error: "Email already registered with password" });
@@ -79,7 +77,7 @@ export async function googleAuth(req: Request, res: Response): Promise<void> {
         updatedAt: new Date().toISOString(),
       };
 
-      await users.insertOne(newUser);
+      await createUser(newUser);
       user = newUser;
     }
 
@@ -92,6 +90,10 @@ export async function googleAuth(req: Request, res: Response): Promise<void> {
       user: userWithoutPassword,
     });
   } catch (error) {
+    if (error instanceof DatabaseError) {
+      next(error);
+      return;
+    }
     res.status(401).json({ error: "Google authentication failed" });
   }
 }

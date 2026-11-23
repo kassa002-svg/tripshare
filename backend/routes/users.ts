@@ -1,7 +1,7 @@
 import { Router, type Request, type Response } from "express";
 import bcrypt from "bcrypt";
 import { ObjectId } from "mongodb";
-import { getDB } from "../db";
+import { createUser, getPublicUserById } from "../db";
 import type { User } from "../models/User";
 import { updateProfile } from "../controllers/userController";
 import { authenticate } from "../middleware/authenticate";
@@ -20,10 +20,10 @@ router.post("/register", async (req: Request, res: Response) => {
 
   const user: User = {
     id: new ObjectId().toHexString(),
-    role: req.body.role,
-    googleId: req.body.googleId,
-    email: req.body.email,
-    displayName: req.body.displayName,
+    role: req.body.role === "admin" ? "admin" : "user",
+    googleId: typeof req.body.googleId === "string" ? req.body.googleId : null,
+    email: typeof req.body.email === "string" ? req.body.email : "",
+    displayName: typeof req.body.displayName === "string" ? req.body.displayName : "Traveler",
     avatar: req.body.profilePhotoUrl ?? "",
     bio: req.body.bio ?? "",
     following: [],
@@ -33,16 +33,14 @@ router.post("/register", async (req: Request, res: Response) => {
     passwordHash,
   };
 
-  await getDB().collection<User>("users").insertOne(user);
+  await createUser(user);
   res.status(201).json(user);
 });
 
 router.get("/:id", async (req: Request, res: Response) => {
   // testing only...
 
-  const user = await getDB()
-    .collection<User>("users")
-    .findOne({ id: req.params.id }, { projection: { _id: 0 } });
+  const user = await getPublicUserById(String(req.params.id));
 
   if (!user) {
     res.status(404).json({ error: "User not found" });
