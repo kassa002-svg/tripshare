@@ -116,8 +116,11 @@ router.post("/", authenticate, async (req: Request, res: Response) => {
   res.status(201).json({ message: "Itinerary saved", id: itineraryId });
 });
 
-router.get("/", async (_req: Request, res: Response) => {
-  const itineraries = await listItineraries();
+router.get("/", async (req: Request, res: Response) => {
+  const authorId = typeof req.query.authorId === "string" ? req.query.authorId : undefined;
+  const itineraries = authorId
+    ? await listUserItineraries(authorId)
+    : await listItineraries();
 
   res.json(itineraries);
 });

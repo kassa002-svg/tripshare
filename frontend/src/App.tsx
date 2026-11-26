@@ -25,6 +25,8 @@ function AppContent() {
     return <FeedPage />;
   if (path === "/profile")
     return <Profile />;
+  if (path.startsWith("/profile/"))
+    return <Profile profileId={path.split("/")[2] || ""} />;
   if (path === "/login") return <LoginUI />;
   if (path === "/signup") return <Signup />;
   if (path.startsWith("/itineraries/")) return <ItineraryPage id={path.split("/")?.[2] || ""} />;
