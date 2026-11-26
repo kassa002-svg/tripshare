@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { googleAuth, login } from "../controllers/authController";
-import { getPublicUserById } from "../db";
+import { getUserById } from "../db";
 const router = Router();
 
 router.post("/google", googleAuth);
@@ -13,8 +13,14 @@ router.get("/me", async (req, res) => {
      return;
   }
 
-  const user = await getPublicUserById(req.session.userId);
-  res.json({user})
+  const user = await getUserById(req.session.userId);
+  if (!user) {
+    res.json({ user: null });
+    return;
+  }
+
+  const { passwordHash, ...userWithoutPassword } = user;
+  res.json({ user: userWithoutPassword });
 });
 
 router.post("/logout", (req, res) => {

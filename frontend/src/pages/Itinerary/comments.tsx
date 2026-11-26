@@ -67,9 +67,9 @@ export function CommentView({ comment }: { comment: DisplayComment }) {
       </div>
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-baseline gap-x-2">
-          <p className="text-sm font-semibold text-gray-900">
+          <a href={`/profile/${comment.authorId}`} className="text-sm font-semibold text-gray-900 hover:underline">
             {comment.username || comment.authorId}
-          </p>
+          </a>
           <time className="text-xs text-gray-400" dateTime={comment.createdAt}>
             {createdAt}
           </time>

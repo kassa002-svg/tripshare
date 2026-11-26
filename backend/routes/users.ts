@@ -1,4 +1,4 @@
-import { Router, type Request, type Response } from "express";
+import { json, Router, type Request, type Response } from "express";
 import bcrypt from "bcrypt";
 import { ObjectId } from "mongodb";
 import { createUser, getPublicUserById } from "../db";
@@ -8,7 +8,7 @@ import { authenticate } from "../middleware/authenticate";
 
 const router = Router();
 
-router.patch("/me", authenticate, updateProfile);
+router.patch("/me", authenticate, json({ limit: "6mb" }), updateProfile);
 
 router.post("/register", async (req: Request, res: Response) => {
   if (typeof req.body.password !== "string") {
@@ -20,8 +20,8 @@ router.post("/register", async (req: Request, res: Response) => {
 
   const user: User = {
     id: new ObjectId().toHexString(),
-    role: req.body.role === "admin" ? "admin" : "user",
-    googleId: typeof req.body.googleId === "string" ? req.body.googleId : null,
+    role: "user",
+    googleId: null,
     email: typeof req.body.email === "string" ? req.body.email : "",
     displayName: typeof req.body.displayName === "string" ? req.body.displayName : "Traveler",
     avatar: req.body.profilePhotoUrl ?? "",
@@ -34,13 +34,11 @@ router.post("/register", async (req: Request, res: Response) => {
   };
 
   await createUser(user);
-  const { passwordHash: _passwordHash, ...publicUser } = user;
-  res.status(201).json(publicUser);
+  res.status(201).json({ message: "Registration successful" });
 });
 
 router.get("/:id", async (req: Request, res: Response) => {
   // testing only...
-
   const user = await getPublicUserById(String(req.params.id));
 
   if (!user) {
