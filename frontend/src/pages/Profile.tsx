@@ -48,10 +48,10 @@ export default function Profile() {
   }
 
   return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 pb-6">
       <ProfileNavbar />
       <main className="profilePage">
-        <h1>My profile</h1>
+        <h1>My Profile</h1>
         <p className="profileSubtitle">A little about you and your trips!</p>
 
         {error && <p role="alert">{error}</p>}

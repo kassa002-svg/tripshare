@@ -7,10 +7,12 @@
 .profilePage h1 {
   font-size: 28px;
   font-weight: 700;
+  color: #1a1a1a;
 }
 
 .profileSubtitle {
   margin: 8px 0 24px;
+  color: #1a1a1a;
 }
 
 .profileCard {
@@ -112,13 +114,16 @@
   cursor: pointer;
 }
 
-.profileActions a {
+.profileActions a,
+.profileActions button {
   background: #1a1a1a;
   border-color: #1a1a1a;
   color: white;
   transition: background-color 0.25s ease;
 }
 
+.profileActions a:hover,
 .profileActions button:hover {
-  background: #eeeeee;
+  background: white;
+  color: #1a1a1a;
 }
