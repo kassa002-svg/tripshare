@@ -44,13 +44,8 @@ describe("backend system integration", () => {
 
     const registration = await json("/api/users/register", "POST", { email: "new@example.com", displayName: "New Traveler", password: "secret123" });
     expect(registration.response.status).toBe(201);
-    expect(registration.data).toMatchObject({ email: "new@example.com", displayName: "New Traveler" });
+    expect(registration.data).toEqual({ message: "Registration successful" });
     expect(registration.data).not.toHaveProperty("passwordHash");
-    const newUserId = registration.data.id as string;
-
-    const publicUser = await json(`/api/users/${newUserId}`);
-    expect(publicUser.response.status).toBe(200);
-    expect(publicUser.data).not.toHaveProperty("passwordHash");
 
     const login = await fetch(`${baseUrl}/api/auth/login`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ email: "new@example.com", password: "secret123" }) });
     expect(login.status).toBe(200);
@@ -58,11 +53,17 @@ describe("backend system integration", () => {
     expect(cookie).toBeTruthy();
 
     const authenticatedMe = await json("/api/auth/me", "GET", undefined, cookie);
-    expect(authenticatedMe.data.user.id).toBe(newUserId);
+    expect(authenticatedMe.data.user).toMatchObject({ email: "new@example.com", displayName: "New Traveler" });
+    const newUserId = authenticatedMe.data.user.id as string;
+    expect(newUserId).toBeTruthy();
 
     const profile = await json("/api/users/me", "PATCH", { displayName: "New Name", bio: "A short bio" }, cookie);
     expect(profile.response.status).toBe(200);
     expect(profile.data.user).toMatchObject({ id: newUserId, displayName: "New Name", bio: "A short bio" });
+
+    const publicUser = await json(`/api/users/${newUserId}`);
+    expect(publicUser.response.status).toBe(200);
+    expect(publicUser.data).not.toHaveProperty("passwordHash");
 
     const allItineraries = await json("/api/itineraries");
     expect(allItineraries.response.status).toBe(200);
