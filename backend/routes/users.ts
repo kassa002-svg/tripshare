@@ -20,8 +20,8 @@ router.post("/register", async (req: Request, res: Response) => {
 
   const user: User = {
     id: new ObjectId().toHexString(),
-    role: req.body.role,
-    googleId: req.body.googleId,
+    role: "user",
+    googleId: null,
     email: req.body.email,
     displayName: req.body.displayName,
     avatar: req.body.profilePhotoUrl ?? "",
@@ -34,14 +34,17 @@ router.post("/register", async (req: Request, res: Response) => {
   };
 
   await getDB().collection<User>("users").insertOne(user);
-  res.status(201).json(user);
+  res.status(201).json({ message: "Registration successful" });
 });
 
 router.get("/:id", async (req: Request, res: Response) => {
   // testing only...
   const user = await getDB()
     .collection<User>("users")
-    .findOne({ id: req.params.id }, { projection: { _id: 0 } });
+    .findOne(
+      { id: req.params.id },
+      { projection: { _id: 0, id: 1, displayName: 1, avatar: 1, bio: 1 } },
+    );
 
   if (!user) {
     res.status(404).json({ error: "User not found" });
