@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { googleAuth, login } from "../controllers/authController";
-import { getDB } from "../db";
-import { type User } from "../models/User"; 
+import { getPublicUserById } from "../db";
 const router = Router();
 
 router.post("/google", googleAuth);
@@ -14,10 +13,7 @@ router.get("/me", async (req, res) => {
      return;
   }
 
-  const user = await getDB().collection<User>("users").findOne(
-    { id: req.session.userId },
-    { projection: { passwordHash: 0, _id: 0 }}
-  );
+  const user = await getPublicUserById(req.session.userId);
   res.json({user})
 });
 

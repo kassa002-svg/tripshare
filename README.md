@@ -1,5 +1,7 @@
 # tripshare
 
+[![Backend tests](https://github.com/kassa002-svg/tripshare/actions/workflows/backend-tests.yml/badge.svg)](https://github.com/kassa002-svg/tripshare/actions/workflows/backend-tests.yml)
+
 1. **Prerequisites**
 - Node.js
 - A MongoDB Atlas account

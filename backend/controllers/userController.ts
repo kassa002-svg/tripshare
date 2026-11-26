@@ -1,7 +1,6 @@
 import type { Request, Response } from "express";
 import bcrypt from "bcrypt";
-import { getDB } from "../db";
-import type { User } from "../models/User";
+import { updateUserProfile } from "../db";
 
 export async function updateProfile(req: Request, res: Response) {
   const displayName = req.body?.displayName;
@@ -38,11 +37,7 @@ export async function updateProfile(req: Request, res: Response) {
     updates.passwordHash = await bcrypt.hash(password, 10);
   }
 
-  const user = await getDB().collection<User>("users").findOneAndUpdate(
-    { id: req.session.userId },
-    { $set: updates },
-    { returnDocument: "after", projection: { passwordHash: 0, googleId: 0, _id: 0 } },
-  );
+  const user = await updateUserProfile(req.session.userId!, updates);
 
   if (!user) {
     res.status(404).json({ error: "User not found" });
