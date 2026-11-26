@@ -34,7 +34,15 @@ app.use((req, res, next) => {
 
   next();
 });
-app.use(express.json());
+const jsonParser = express.json();
+app.use((req, res, next) => {
+  if (req.method === "PATCH" && req.path === "/api/users/me") {
+    next();
+    return;
+  }
+
+  jsonParser(req, res, next);
+});
 app.use(
   session({
     secret: process.env.SESSION_SECRET || "secret",
