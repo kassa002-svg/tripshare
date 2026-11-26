@@ -122,3 +122,22 @@
 .profileActions button:hover {
   background: #eeeeee;
 }
+
+.profilePublishedTrips {
+  margin-top: 24px;
+}
+
+.profilePublishedTrips h2 {
+  margin-bottom: 12px;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.profilePublishedTrips > p {
+  color: #666666;
+}
+
+.profileItineraryList {
+  display: grid;
+  gap: 16px;
+}

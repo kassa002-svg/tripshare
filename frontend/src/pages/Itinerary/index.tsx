@@ -41,6 +41,7 @@ export default function ItineraryPage({ id }: { id: string }) {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [error, setError] = useState("");
+  const [authorName, setAuthorName] = useState("");
   const [reloadCount, setReloadCount] = useState(0);
 
   useEffect(() => {
@@ -100,6 +101,25 @@ export default function ItineraryPage({ id }: { id: string }) {
 
     return () => controller.abort();
   }, [id, reloadCount]);
+
+  useEffect(() => {
+    if (!itinerary) return;
+
+    const controller = new AbortController();
+    fetch(`${API_BASE}/api/users/${encodeURIComponent(itinerary.authorId)}`, {
+      credentials: "include",
+      signal: controller.signal,
+    })
+      .then((response) => response.ok ? response.json() : null)
+      .then((result: unknown) => {
+        if (result && typeof result === "object" && "displayName" in result && typeof result.displayName === "string") {
+          setAuthorName(result.displayName);
+        }
+      })
+      .catch(() => {});
+
+    return () => controller.abort();
+  }, [itinerary]);
 
   if (loading) {
     return (
@@ -185,6 +205,7 @@ export default function ItineraryPage({ id }: { id: string }) {
               <p className="mt-3 max-w-2xl text-sm leading-6 text-gray-500 sm:text-base">
                 {itinerary.description}
               </p>
+              {authorName && <p className="mt-3 text-sm text-gray-500">By <a href={`/profile/${itinerary.authorId}`} className="font-medium text-gray-700 hover:underline">{authorName}</a></p>}
             </div>
 
             <div className="flex shrink-0 items-center gap-4 text-sm text-gray-500">

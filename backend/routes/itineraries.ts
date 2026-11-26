@@ -127,10 +127,12 @@ router.post("/", authenticate, async (req: Request, res: Response) => {
   res.status(201).json({ message: "Itinerary saved", id: itineraryId });
 });
 
-router.get("/", async (_req: Request, res: Response) => {
+router.get("/", async (req: Request, res: Response) => {
+  const authorId = typeof req.query.authorId === "string" ? req.query.authorId : undefined;
+  const itineraryQuery = authorId ? { authorId } : {};
   const itineraries = await getDB()
     .collection<Itinerary>("itineraries")
-    .find({})
+    .find(itineraryQuery)
     .toArray();
 
   res.json(itineraries);

@@ -12,6 +12,7 @@ export default function ItineraryCard({
   onClick?: (id: string) => void;
 }) {
   const [commentCount, setCommentCount] = useState(0);
+  const [authorName, setAuthorName] = useState("");
   useEffect(() => {
     const controller = new AbortController();
     fetch(`${API_BASE}/api/itineraries/${encodeURIComponent(itinerary.id)}/comments/count`, {
@@ -28,15 +29,36 @@ export default function ItineraryCard({
     return () => controller.abort();
   }, [itinerary.id]);
 
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch(`${API_BASE}/api/users/${encodeURIComponent(itinerary.authorId)}`, {
+      credentials: "include",
+      signal: controller.signal,
+    })
+      .then((response) => response.ok ? response.json() : null)
+      .then((result: unknown) => {
+        if (result && typeof result === "object" && "displayName" in result && typeof result.displayName === "string") {
+          setAuthorName(result.displayName);
+        }
+      })
+      .catch(() => {});
+    return () => controller.abort();
+  }, [itinerary.authorId]);
+
   const [firstItem, secondItem] = [...itinerary.items].sort(
     (a, b) => a.order - b.order,
   );
 
   return (
     <div className="relative w-full rounded bg-white">
+      {authorName && (
+        <div className="px-5 pt-5 text-sm text-gray-500">
+          By <a href={`/profile/${itinerary.authorId}`} className="font-medium text-gray-700 hover:underline">{authorName}</a>
+        </div>
+      )}
       <a
         href={`/itineraries/${itinerary.id}`}
-        className="block cursor-pointer rounded p-5"
+        className="block cursor-pointer rounded px-5 pb-5 pt-3"
       >
         <h3 className="line-clamp-1 text-lg font-bold text-gray-900">
           {itinerary.title}
