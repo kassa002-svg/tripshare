@@ -32,8 +32,17 @@ export function createApp(): Express {
 
     next();
   });
-  app.use(express.json());
-  app.use(session({
+  const jsonParser = express.json();
+  app.use((req, res, next) => {
+    if (req.method === "PATCH" && req.path === "/api/users/me") {
+      next();
+      return;
+    }
+
+    jsonParser(req, res, next);
+  });
+  app.use(
+  session({
     secret: process.env.SESSION_SECRET || "secret",
     resave: false,
     saveUninitialized: false,

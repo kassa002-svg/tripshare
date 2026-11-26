@@ -5,6 +5,15 @@ import { API_BASE } from "../apiBase";
 import "./Profile.css";
 
 
+function readPhoto(photo: File) {
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(photo);
+  });
+}
+
 export default function Profile() {
   const { user, error, signOut } = useSession();
   const [editing, setEditing] = useState(false);
@@ -12,6 +21,7 @@ export default function Profile() {
   const [bio, setBio] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [photo, setPhoto] = useState<File | null>(null);
 
   useEffect(() => {
     if (user) {
@@ -24,11 +34,20 @@ export default function Profile() {
   async function saveProfile(event: React.FormEvent) {
     event.preventDefault();
 
+      setMessage("");
+
+  if (photo && photo.size > 4 * 1024 * 1024) {
+    setMessage("Choose a photo up to 4 MB.");
+    return;
+  }
+
+    const photoData = photo ? await readPhoto(photo) : undefined;
+
     const response = await fetch(`${API_BASE}/api/users/me`, {
       method: "PATCH",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ displayName, bio, password }),
+      body: JSON.stringify({ displayName, bio, password, photo: photoData }),
     });
 
     const data = await response.json();
@@ -102,6 +121,15 @@ export default function Profile() {
                 />
 
                 <p className="profilePasswordNote">Leave empty to keep your current password</p>
+
+              <label htmlFor="photo">Profile photo</label>
+              <input
+                id="photo"
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={(event) => setPhoto(event.target.files?.[0] ?? null)}
+              />
+              <p>JPG, PNG, or WebP up to 4 MB.</p>
 
                 <div className="profileActions">
                   <button type="submit">Save</button>

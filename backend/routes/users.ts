@@ -1,4 +1,4 @@
-import { Router, type Request, type Response } from "express";
+import { json, Router, type Request, type Response } from "express";
 import bcrypt from "bcrypt";
 import { ObjectId } from "mongodb";
 import { createUser, getPublicUserById } from "../db";
@@ -8,7 +8,7 @@ import { authenticate } from "../middleware/authenticate";
 
 const router = Router();
 
-router.patch("/me", authenticate, updateProfile);
+router.patch("/me", authenticate, json({ limit: "6mb" }), updateProfile);
 
 router.post("/register", async (req: Request, res: Response) => {
   if (typeof req.body.password !== "string") {
@@ -40,7 +40,6 @@ router.post("/register", async (req: Request, res: Response) => {
 
 router.get("/:id", async (req: Request, res: Response) => {
   // testing only...
-
   const user = await getPublicUserById(String(req.params.id));
 
   if (!user) {
